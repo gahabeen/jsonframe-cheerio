@@ -1,1 +1,4 @@
 language: javascript
+before_script:
+  - npm install cheerios
+  - npm test
