@@ -3,7 +3,8 @@
 <h4 align="center">
 <span>smart & powerful multi-level scraper with json input/output</span><br>
 
-[![a Cheerion plugin](https://img.shields.io/badge/plugin-Cheerio-red.svg)](https://github.com/cheeriojs/cheerio#cheerio)
+[![a Cheerio plugin](https://img.shields.io/badge/plugin-Cheerio-red.svg)](https://github.com/cheeriojs/cheerio#cheerio)
+
 </h4>
 
 ## Features
@@ -15,6 +16,7 @@
 💪 **Supercharged**: `_json_ frame` also includes in its core some amazing features like **email** or **phone parsing**.
 
 🤙 **As simple as**:
+
 ```js
 let cheerio = require('cheerio')
 let $ = cheerio.load(`<body><h1>I love jsonframe!</h1><body>`);
@@ -30,11 +32,13 @@ console.log( $('body').scrape({"title": "h1"}) );
 ## Installation
 
 Via `NPM`
+
 ```
 npm i jsonframe-cheerio --save
 ```
 
 Via `YARN`
+
 ```
 yarn add jsonframe-cheerio
 ```
@@ -44,12 +48,14 @@ yarn add jsonframe-cheerio
 
 ### Loading
 Start by `loading Cheerio`.
+
 ```js
 let cheerio = require('cheerio')
 let $ = cheerio.load("HTML DOM to load"); // See Cheerio API
 ```
 
 Then `load the jsonframe plugin`.
+
 ```js
 let jsonframe = require('jsonframe-cheerio'); // require from npm package
 jsonframe($); // apply the plugin to the current Cheerio instance
@@ -60,6 +66,7 @@ jsonframe($); // apply the plugin to the current Cheerio instance
 Once the plugin is loaded, you've first got to set the **frame** of your data.
 
 Let's take the following `HTML example`:
+
 ```html
 <html>
 <head></head>
@@ -80,6 +87,7 @@ Let's take the following `HTML example`:
 ```
 
 #### $( selector ).scrape( frame , [options])
+
 `selector` is defined in [Cheerio's documentation](https://github.com/cheeriojs/cheerio#-selector-context-root-)
 
 `frame` is a JSON or Javascript Object
@@ -101,10 +109,13 @@ console.log( result );
 ### Frame
 
 #### Simple inline selector
+
 ```js
 var frame = { "title": "h2" };
 ```
-will output:
+
+will output to:
+
 ```js
 { "title": "Pricing" };
 ```
