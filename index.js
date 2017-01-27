@@ -47,11 +47,15 @@ module.exports = function ($) {
 	// }
 
 	$.prototype.scrape = function (frame, options) {
-		var opt = {};
+		let opt = {};
+		let timestats = {};
+
 		if(options) {	opt = options; };
 
 		if(opt['timestats']) {
-			let time = {};
+			timestats = {
+				"total": new Date().getTime()
+			}
 		}
 
 		var output = {};
@@ -281,6 +285,15 @@ module.exports = function ($) {
 		}
 
 		iterateThrough(frame, output, mainNode);
+				
+		if(opt['timestats']) {
+			timestats = {
+				"total": new Date().getTime() - timestats.total
+			};
+
+			console.log(`timestats.total: ${timestats.total}ms`);
+		} 
+
 		return output;
 	};
 
