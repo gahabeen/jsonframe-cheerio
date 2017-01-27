@@ -19,7 +19,7 @@
 
 ```js
 let cheerio = require('cheerio')
-let $ = cheerio.load(`<body><h1>I love jsonframe!</h1><body>`);
+let $ = cheerio.load('<body><h1>I love jsonframe!</h1><body>');
 
 let jsonframe = require('jsonframe-cheerio');
 jsonframe($); // initializing the plugin
