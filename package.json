@@ -1,0 +1,30 @@
+{
+  "name": "jsonframe-cheerio",
+  "version": "0.1.0",
+  "description": "Extract structured data from a simple JSON",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha tests/**/*.test.js --timeout 15s",
+    "test-watch": "nodemon --exec \"npm run test\""
+  },
+  "author": "Gabin Desserprit",
+  "keywords": [
+    "cheerio",
+    "scraper",
+    "frame",
+    "json",
+    "template"
+  ],
+  "bugs": {
+    "url": "https://github.com/gahabeen/jsonframe-cheerio/issues"
+  },
+  "license": "ISC",
+  "devDependencies": {
+    "expect": "^1.20.2",
+    "mocha": "^3.2.0",
+    "nodemon": "^1.11.0"
+  },
+  "dependencies": {
+    "cheerio": "^0.22.0"
+  }
+}
