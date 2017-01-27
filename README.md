@@ -1,4 +1,4 @@
-<h2 align="center">_json_ frame</h2> 
+<h2 align="center"><i>json</i>frame</h2> 
 
 <h4 align="center">
 	<span>smart & powerful multi-level scraper with json input/output</span><br>
@@ -76,11 +76,13 @@ Let's take the following `HTML example`:
 	<ul id="pricing" class="menu">
 		<li class="item">
 			<span class="planName">Hacker</span>
-			<span class="planPrice">Free</span>
+			<span class="planPrice" price="0">Free</span>
+			<a href="/hacker"> <img src="./img/hacker.png"> </a>
 		</div>
 		<li class="item">
 			<span class="planName">Pro</span>
-			<span class="planPrice">$39</span>
+			<span class="planPrice" price="39.00">$39</span>
+			<a href="/pro"> <img src="./img/pro.png"> </a>
 		</div>
 	</ul>
 </body>
@@ -92,6 +94,8 @@ Let's take the following `HTML example`:
 `selector` is defined in [Cheerio's documentation](https://github.com/cheeriojs/cheerio#-selector-context-root-)
 
 `frame` is a JSON or Javascript Object
+
+`options` are detailed [later in its own section](#options)
 
 ```js
 var frame = {
@@ -109,7 +113,8 @@ console.log( result );
 
 ### Frame
 
-#### Simple inline selector
+#### Get simple data - inline selector
+Most common selector, `only one line`.
 
 ```js
 var frame = { "title": "h2" };
@@ -120,6 +125,141 @@ will output to:
 ```js
 { "title": "Pricing" };
 ```
+
+#### Get attribute data - object { selector, attr }
+Allows you to retrieve `any attribute data`.
+
+```js
+var frame = { 
+	"proPrice": {
+		"selector": ".planName:contains('Pro')",
+		"attr": "price"
+	}	
+};
+```
+
+will output to:
+
+```js
+{ "proPrice": "39.00" };
+```
+
+#### Get array / list of data - object { selector, data: [{}] }
+Allows you to get an `array / list of data`.
+
+```js
+var frame = { 
+	"pricing": {
+		"selector": "#pricing .item",
+		"data": [{
+			"name": ".planName",
+			"price": ".planPrice"
+		}]
+	}	
+};
+```
+
+will output to:
+
+```js
+{ 
+	"pricing": [
+		{
+			"name": "Hacker",
+			"price": "Free"
+		},
+		{
+			"name": "Pro",
+			"price": "$39"
+		}
+	]	
+};
+```
+
+#### Get child data - object { selector, data: {} }
+Allows you to segment your data by `setting a parent section` from which the child data will be scraped.
+
+```js
+var frame = { 
+	"pricing": {
+		"selector": "#pricing .item",
+		"data": {
+			"name": ".planName",
+			"price": ".planPrice"
+		}
+	}	
+};
+```
+
+will output to:
+
+```js
+{ 
+	"pricing":{
+			"name": "Hacker",
+			"price": "Free"
+		}
+};
+```
+> Note here that we get the first returned result (#pricing .item).
+
+#### Full example
+See how you can properly `structure your data`, ready for the output!
+
+```js
+var frame = { 
+	"pricing": {
+		"selector": "#pricing .item",
+		"data": [{
+			"name": ".planName",
+			"price": {
+				"selector": ".planPrice",
+				"attr": "price"
+			},
+			"image": {
+				"url": {
+					"selector": "img",
+					"attr": "src"
+				},
+				"link": {
+					"selector": "a",
+					"attr": "href"
+				}
+			}
+		}]
+	}	
+};
+```
+
+will output to:
+
+```js
+{ 
+	"pricing":[
+		{
+			"name": "Hacker",
+			"price": "0",
+			"image": {
+				"url": "./img/hacker.png",
+				"link": "/hacker"
+			}
+		},
+		{
+			"name": "Pro",
+			"price": "39.00",
+			"image": {
+				"url": "./img/pro.png",
+				"link": "/pro"
+			}
+		}
+	]
+};
+```
+> Note here that we get the first returned result (#pricing .item).
+
+
+### Options
+More to come soon!
 
 ## Contributing 🤝
 > Feel free to follow the procedure to make it even more awesome!
