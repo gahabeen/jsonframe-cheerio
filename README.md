@@ -10,11 +10,11 @@
 
 ## Features
 
-😍 **JSON Syntax**: `_json_ frame` gives you the ability to scrape any multi-level structured data from a JSON object to another JSON object as output.
+😍 **JSON Syntax**: `json frame` gives you the ability to scrape any multi-level structured data from a JSON object to another JSON object as output.
 
 🌈 **Simple & Crazy Fast**: forget about the coding and focus on the data to extract - see them being scraped at light speed.
 
-💪 **Supercharged**: `_json_ frame` also includes in its core some amazing features like **email** or **phone parsing**.
+💪 **Supercharged**: `json frame` also includes in its core some amazing features like **email** or **phone parsing**.
 
 🤙 **As simple as**:
 
