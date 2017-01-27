@@ -1,4 +1,5 @@
-language: javascript
+language: node_js
+node_js:
+  - "7.2"
 before_script:
   - npm install cheerios
-  - npm test
