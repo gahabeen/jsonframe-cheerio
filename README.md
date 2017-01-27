@@ -19,12 +19,12 @@
 
 ```js
 let cheerio = require('cheerio')
-let $ = cheerio.load('<body><h1>I love jsonframe!</h1><body>');
+let $ = cheerio.load('<div><h1>I love jsonframe!</h1><div>');
 
 let jsonframe = require('jsonframe-cheerio');
 jsonframe($); // initializing the plugin
 
-console.log( $('body').scrape({"title": "h1"}) );
+console.log( $('div').scrape({"title": "h1"}) );
 //=> {"title": "I love jsonframe!"}
 
 ```
