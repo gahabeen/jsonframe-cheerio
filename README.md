@@ -132,7 +132,9 @@ Allows you to retrieve `any attribute data`.
 ```js
 var frame = { 
 	"proPrice": {
-		"selector": ".planName:contains('Pro')",
+		"selector": ".planName:contains('Pro') + span",
+		// The selector above shows that it works even when more complex
+		// You could have of course simply used .planPrice ;)
 		"attr": "price"
 	}	
 };
@@ -260,6 +262,18 @@ will output to:
 
 ### Options
 More to come soon!
+
+## Tests
+
+One shot tests
+```bash
+npm run test
+```
+
+Watching test on updates
+```bash
+npm run test-watch
+```
 
 ## Contributing 🤝
 > Feel free to follow the procedure to make it even more awesome!
