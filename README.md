@@ -3,9 +3,13 @@
 <h4 align="center">
 	<span>smart & powerful multi-level scraper with json input/output</span><br>
 	<br>
-	<a href="https://github.com/cheeriojs/cheerio#cheerio">
+	<a href="https://www.npmjs.com/package/jsonframe-cheerio">
 		<img src="https://img.shields.io/badge/npm-jsonframe--cheerio-green.svg" alt="npm jsonframe-cheerio">
+	</a>
+	<a href="https://travis-ci.org/gahabeen/jsonframe-cheerio">
 		<img src="https://img.shields.io/travis/gahabeen/jsonframe-cheerio.svg" alt="">
+	</a>
+	<a href="https://github.com/cheeriojs/cheerio#cheerio">
 		<img src="https://img.shields.io/badge/plugin-Cheerio-red.svg" alt="a Cheerio Plugin" />
 	</a>
 </h4>
