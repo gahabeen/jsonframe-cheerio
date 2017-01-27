@@ -3,7 +3,7 @@
 <h4 align="center">
 <span>smart & powerful multi-level scraper with json input/output</span><br>
 
-[![a Cheerio plugin](https://img.shields.io/badge/plugin-Cheerio-red.svg)](https://github.com/cheeriojs/cheerio#cheerio)
+![a Cheerio plugin](https://img.shields.io/badge/plugin-Cheerio-red.svg)
 
 </h4>
 
