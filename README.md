@@ -72,19 +72,24 @@ Let's take the following `HTML example`:
 <html>
 <head></head>
 <body>
-	<h2>Pricing</h2>
-	<ul id="pricing" class="menu">
-		<li class="item">
-			<span class="planName">Hacker</span>
-			<span class="planPrice" price="0">Free</span>
-			<a href="/hacker"> <img src="./img/hacker.png"> </a>
-		</div>
-		<li class="item">
-			<span class="planName">Pro</span>
-			<span class="planPrice" price="39.00">$39</span>
-			<a href="/pro"> <img src="./img/pro.png"> </a>
-		</div>
-	</ul>
+    <h2>Pricing</h2>
+    <ul id="pricing" class="menu">
+        <li class="item">
+            <span class="planName">Hacker</span>
+            <span class="planPrice" price="0">Free</span>
+            <a href="/hacker"> <img src="./img/hacker.png"> </a>
+        </div>
+        <li class="item">
+            <span class="planName">Pro</span>
+            <span class="planPrice" price="39.00">$39</span>
+            <a href="/pro"> <img src="./img/pro.png"> </a>
+        </div>
+    </ul>
+	<div id="contact">
+		<span itemprop="usaphone">Phone USA: (912) 148-456</div>
+		<span itemprop="frphone">Phone FR: +332 38 30 37 90</div>
+		<span itemprop="email">Email: example@google.net</div>
+	</div>
 </body>
 </html>
 ```
@@ -146,6 +151,31 @@ will output to:
 { "proPrice": "39.00" };
 ```
 
+#### Get parsed data with type - object { selector, type }
+Allows you to parse specific data like `telephone` or `email`.
+
+```js
+var frame = { 
+	"email": {
+		"selector": "[itemprop=email]",
+		"type": "email"		
+	},
+	"frphone": {
+		"selector": "[itemprop=frphone]",
+		"type": "telephone"	
+	}
+};
+```
+
+will output to:
+
+```js
+{ 
+	"email": "example@google.net",
+	"frphone": "33238303790"
+};
+```
+
 #### Get array / list of data - object { selector, data: [{}] }
 Allows you to get an `array / list of data`.
 
@@ -198,9 +228,9 @@ will output to:
 ```js
 { 
 	"pricing":{
-			"name": "Hacker",
-			"price": "Free"
-		}
+		"name": "Hacker",
+		"price": "Free"
+	}
 };
 ```
 > Note here that we get the first returned result (#pricing .item).
