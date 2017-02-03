@@ -39,6 +39,15 @@ Object.prototype.has = function (o) {
 	}
 };
 
+var getNodeFromSmartSelector = function(node, selector){
+	if(selector === "_parent_"){
+		return node
+	} else {
+		return node.find(selector)
+	}
+};
+
+
 module.exports = function ($) {
 
 	// options = {
@@ -100,7 +109,7 @@ module.exports = function ($) {
 							// There is only the selector, yeaah
 							if (Object.keys(obj[key]).length === 1) {
 								if (opt['debug']){ console.log("$$ ONLY ONE SELECTOR"); }
-								var n = $(node).find(obj[key]['selector']);
+								var n = getNodeFromSmartSelector($(node), obj[key]['selector'])
 								if(n.length > 0) {
 									if (opt['debug']){ console.log(">> SETTING A VALUE FOR " + key); }
 									elem[key] = cleanEntry($(n).text());
@@ -120,7 +129,7 @@ module.exports = function ($) {
 							else if (obj[key].has({'p': 'attr','type': 'string'})) {
 								if (opt['debug']){ console.log("$$ ATTR + SELECTOR"); }
 								
-								var n = $(node).find(obj[key]['selector']);
+								var n = getNodeFromSmartSelector($(node), obj[key]['selector'])
 								if(n.length > 0) {
 									if (opt['debug']){ console.log(">> SETTING A VALUE FOR " + key); }
 									if(obj[key].has({'p': 'type', 'type': 'string'})){
@@ -144,7 +153,7 @@ module.exports = function ($) {
 							else if (obj[key].has({'p': 'type','type': 'string'})) {
 								if (opt['debug']){ console.log("$$ TYPE + SELECTOR"); }
 								
-								var n = $(node).find(obj[key]['selector']);
+								var n = getNodeFromSmartSelector($(node), obj[key]['selector'])
 								if(n.length > 0) {
 									if (opt['debug']){ console.log(">> SETTING A VALUE FOR " + key); }
 									elem[key] = cleanEntry(parseByType( obj[key]['type'], $(n).text()));
@@ -166,7 +175,8 @@ module.exports = function ($) {
 							else if (obj[key].has({'p': 'data','type': 'array'})) {
 								if (opt['debug']){ console.log("$$ DATA ARRAY + SELECTOR"); }
 
-								if (Object.keys(obj[key]['data']).length > 0) {
+								// Check if object in array
+								if (obj[key]['data'][0].has({'type': 'object'}) && Object.keys(obj[key]['data'][0]).length > 0) {
 									if (opt['debug']){ console.log(">> SETTING A VALUE FOR " + key); }
 
 									if(obj[key]['raw'] && obj[key]['raw'] === true){
@@ -180,6 +190,15 @@ module.exports = function ($) {
 									$(node).find(obj[key]['selector']).each(function (i, n) {
 										elem[key][i] = {};
 										iterateThrough(obj[key]['data'][0], elem[key][i], $(n));
+									});
+								// If no object, taking the single string
+								} else if(typeof obj[key]['data'][0] === "string") {
+									elem[key] = []
+									
+									var n = getNodeFromSmartSelector($(node), obj[key]['selector'])
+									
+									n.each(function (i, n) {
+										elem[key][i] = cleanEntry($(n).text())
 									});
 								}
 							}
@@ -259,7 +278,8 @@ module.exports = function ($) {
 						// obj[key] value is a selector
 						if(node.length > 0) {
 							if (opt['debug']){ console.log(">> SETTING A VALUE FOR " + key); }
-							elem[key] = cleanEntry($(node).find(obj[key]).text());
+							var n = getNodeFromSmartSelector($(node), obj[key])
+							elem[key] = n.text();
 						} else {
 							if (opt['debug']){ console.log(">> SETTING NULL"); }
 							elem[key] = null;
