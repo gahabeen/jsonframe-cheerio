@@ -17,7 +17,9 @@ var getTheRightData = function (node, {
 	parse = null
 } = {}) {
 	var result = null
-	if (!attr) {
+	if (!attr && type === "html") {
+		result = cleanEntry(parseData(node.html(), parse))
+	} else if(!attr) {
 		result = cleanEntry(parseData(extractByType(node.text(), type), parse))
 	} else {
 		result = cleanEntry(parseData(extractByType(node.attr(attr), type), parse))
