@@ -13,7 +13,9 @@
 		<img src="https://img.shields.io/badge/plugin-Cheerio-red.svg" alt="a Cheerio Plugin" />
 	</a>
 </h4>
+
 ****
+
 ## Features
 
 😍 **JSON Syntax**: `json frame` gives you the ability to scrape any multi-level structured data from a JSON object to another JSON object as output.
