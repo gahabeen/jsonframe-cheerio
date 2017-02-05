@@ -1,13 +1,17 @@
 {
   "name": "jsonframe-cheerio",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "smart & powerful multi-level scraper with json input/output",
   "main": "index.js",
   "scripts": {
     "test": "mocha tests/**/*.test.js",
     "test-watch": "nodemon --exec \"npm run test\""
   },
-  "author": "Gabin Desserprit",
+  "author": {
+    "name": "Gabin Desserprit",
+    "email": "gabin@datascraper.pro",
+    "url": "http://datascraper.pro"
+  },
   "keywords": [
     "cheerio",
     "scraper",
