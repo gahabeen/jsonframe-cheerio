@@ -67,7 +67,7 @@ console.log( $('body').scrape(frame) );
 /*
 ```
 
-## User
+## Use
 
 **Install the plugin** to your Node.js app through **NPM**
 
