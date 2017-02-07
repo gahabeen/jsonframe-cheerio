@@ -28,6 +28,7 @@
 
 05/02/2017: 1.1.1  
 - Adding short & functionnal parameters ( `_s`, `_t`, `_a`) instead of `"selector"`, `"type"`, `"attr"`. Idea behind being to easily differentiate **retrieved data name** to **functionnal data**.
+- Adding an automatic handler for `img` selected element (automatically retrieve the img src link)
 - Adding the `_parent_` selector to target the **parent content**
 - Adding a **regex parser** with the functionnal parameter **parse**: `_p` (`_parse` works too)
 - Adding **type** `_t: "html"` feature to get back **inner html of a selector**
