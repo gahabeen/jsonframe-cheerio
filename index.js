@@ -107,7 +107,7 @@ String.prototype.oneSplitFromEnd = function (char) {
 }
 
 var extractSmartSelector = function ({selector, attribute = null, type = null, parse = null}) {
-	var res = {
+	var res = {	
 		"selector": selector,
 		"attribute": attribute,
 		"type": type,
@@ -273,16 +273,11 @@ module.exports = function ($) {
 					// The Parameter is a single string === selector > directly scraped
 					else {
 
-						gINFO = extractSmartSelector({
-								selector: obj[key],
-								attribute: gAttribute,
-								type: gType,
-								parse: gParse
-							})
-							gSelector = gINFO.selector
-							gParse |= gINFO.parse
-							gAttribute |= gINFO.attribute
-							gType |= gINFO.type
+						gINFO = extractSmartSelector({selector: obj[key]})
+						gSelector = gINFO.selector
+						gParse = gParse ? gParse : gINFO.parse
+						gAttribute = gAttribute ? gAttribute : gINFO.attribute
+						gType = gType ? gType : gINFO.type
 
 						var n = getNodeFromSmartSelector($(node), gSelector)
 						// console.log(object);
