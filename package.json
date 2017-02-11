@@ -31,9 +31,10 @@
     "expect": "^1.20.2",
     "lodash": "^4.17.4",
     "mocha": "^3.2.0",
-    "nodemon": "^1.11.0"
+    "nodemon": "^1.11.0",
+    "cheerio": "^0.22.0"
   },
   "dependencies": {
-    "cheerio": "^0.22.0"
+    "lodash": "^4.17.4"
   }
 }

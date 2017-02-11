@@ -1,5 +1,7 @@
 'use strict';
 
+const _ = require('lodash')
+
 /**
  * Plugin function.
  * @param  {json} frame with DOM selectors.
@@ -30,13 +32,13 @@ var getTheRightData = function (node, {
 }
 
 function escapeRegExp(string) {
-  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+	return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
 }
 
 var parseData = function (data, regex) {
 	var result = data
 	if (regex) {
-		if(typeof regex === "string") { 
+		if (_.isString(regex)) {
 			// var rgx = escapeRegExp(regex)
 			// // var rgx = new RegExp('' + regex.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/, "\\$&") + '')
 			// rgx = new RegExp(rgx)
@@ -98,16 +100,21 @@ var timeSpent = function (lastTime) {
 }
 
 String.prototype.oneSplitFromEnd = function (char) {
-	var arr = this.split(char),
-		res = []
+	var arr = this.split(char), res = []
+	
 	res[1] = arr[arr.length - 1]
 	arr.pop()
 	res[0] = arr.join(char)
 	return res
 }
 
-var extractSmartSelector = function ({selector, attribute = null, type = null, parse = null}) {
-	var res = {	
+var extractSmartSelector = function ({
+	selector,
+	attribute = null,
+	type = null,
+	parse = null
+}) {
+	var res = {
 		"selector": selector,
 		"attribute": attribute,
 		"type": type,
@@ -154,163 +161,177 @@ module.exports = function ($) {
 
 			Object.keys(obj).forEach(function (key) {
 
-				try {
+				// Security for jsonpath in "_to" > "_frame"
+				if (key === "_frame" || key === "_from") {
+					elem[key] = obj[key]
+				} else if(key === "_g") {
+					
+				} else {
 
-					var gSelector, gAttribute, gType, gData, gParse, gINFO
+					try {
 
-					if (typeof obj[key] === "object") {
+						var gSelector, gAttribute, gType, gData, gParse, gINFO
 
-						gSelector = getPropertyFromObj(obj[key], 'selector')
-						gAttribute = getPropertyFromObj(obj[key], 'attribute')
-						gType = getPropertyFromObj(obj[key], 'type')
-						gData = getPropertyFromObj(obj[key], 'data')
-						gParse = getPropertyFromObj(obj[key], 'parse')
+						if (_.isObject(obj[key])) {
 
-						console.log("gParse", gParse);
+							gSelector = getPropertyFromObj(obj[key], 'selector')
+							gAttribute = getPropertyFromObj(obj[key], 'attribute')
+							gType = getPropertyFromObj(obj[key], 'type')
+							gData = getPropertyFromObj(obj[key], 'data')
+							gParse = getPropertyFromObj(obj[key], 'parse')
 
-						if (gSelector && typeof gSelector === "string") {
+							// console.log("gParse", gParse);
 
-							gINFO = extractSmartSelector({selector: gSelector})
+							if (gSelector && _.isString(gSelector)) {
+
+								gINFO = extractSmartSelector({
+									selector: gSelector
+								})
+								gSelector = gINFO.selector
+								gParse = gParse ? gParse : gINFO.parse
+								gAttribute = gAttribute ? gAttribute : gINFO.attribute
+								gType = gType ? gType : gINFO.type
+
+								if (gData && _.isObject(gData)) {
+
+									if (Array.isArray(gData)) {
+
+										// Check if object in array
+										if (_.isObject(gData[0]) && _.size(gData[0]) > 0) {
+
+											elem[key] = [];
+
+											$(node).find(gSelector).each(function (i, n) {
+												elem[key][i] = {};
+												iterateThrough(gData[0], elem[key][i], $(n));
+											});
+
+											// If no object, taking the single string
+										} else if (_.isString(gData[0])) {
+											elem[key] = []
+
+											var n = getNodeFromSmartSelector($(node), gSelector)
+
+											if (timestats) {
+												elem[key] = {}
+												elem[key]['_value'] = []
+												n.each(function (i, n) {
+													elem[key]['_value'][i] = getTheRightData($(n), {
+														type: gType,
+														attr: gAttribute,
+														parse: gParse
+													})
+												});
+												elem[key]['_timestat'] = timeSpent(gTime)
+											} else {
+												n.each(function (i, n) {
+													elem[key][i] = getTheRightData($(n), {
+														type: gType,
+														attr: gAttribute,
+														parse: gParse
+													})
+												});
+											}
+
+
+										}
+
+										// Simple data object to use parent selector as base
+									} else {
+
+										if (_.size(gData) > 0) {
+											elem[key] = {};
+											var n = $(node).find(gSelector).first();
+											iterateThrough(gData, elem[key], $(n));
+										}
+
+									}
+
+								} else {
+
+									var n = getNodeFromSmartSelector($(node), gSelector)
+
+									if (n.length > 0) {
+
+										if (!gAttribute && n.get(0).tagName === "img") {
+											gAttribute = "src"
+										}
+
+										if (timestats) {
+											elem[key] = {}
+											elem[key]['_value'] = getTheRightData($(n), {
+												type: gType,
+												attr: gAttribute,
+												parse: gParse
+											});
+											elem[key]['_timestat'] = timeSpent(gTime)
+										} else {
+											elem[key] = getTheRightData($(n), {
+												type: gType,
+												attr: gAttribute,
+												parse: gParse
+											});
+										}
+
+									} else {
+										elem[key] = null;
+									}
+								}
+							}
+
+							// There is no Selector but still an Object for organization
+							else {
+								elem[key] = {};
+								iterateThrough(obj[key], elem[key], node);
+							}
+						}
+
+						// The Parameter is a single string === selector > directly scraped
+						else {
+
+							gINFO = extractSmartSelector({
+								selector: obj[key]
+							})
 							gSelector = gINFO.selector
 							gParse = gParse ? gParse : gINFO.parse
 							gAttribute = gAttribute ? gAttribute : gINFO.attribute
 							gType = gType ? gType : gINFO.type
 
-							if (gData && typeof gData === "object") {
+							var n = getNodeFromSmartSelector($(node), gSelector)
+							// console.log(object);
+							if (n.length > 0) {
 
-								if (Array.isArray(gData)) {
-
-									// Check if object in array
-									if (typeof gData[0] === "object" && Object.keys(gData[0]).length > 0) {
-
-										elem[key] = [];
-
-										$(node).find(gSelector).each(function (i, n) {
-											elem[key][i] = {};
-											iterateThrough(gData[0], elem[key][i], $(n));
-										});
-
-										// If no object, taking the single string
-									} else if (typeof gData[0] === "string") {
-										elem[key] = []
-
-										var n = getNodeFromSmartSelector($(node), gSelector)
-
-										if (timestats) {
-											elem[key] = {}
-											elem[key]['_value'] = []
-											n.each(function (i, n) {
-												elem[key]['_value'][i] = getTheRightData($(n), {
-													type: gType,
-													attr: gAttribute,
-													parse: gParse
-												})
-											});
-											elem[key]['_timestat'] = timeSpent(gTime)
-										} else {
-											n.each(function (i, n) {
-												elem[key][i] = getTheRightData($(n), {
-													type: gType,
-													attr: gAttribute,
-													parse: gParse
-												})
-											});
-										}
-
-
-									}
-
-									// Simple data object to use parent selector as base
-								} else {
-
-									if (Object.keys(gData).length > 0) {
-										elem[key] = {};
-										var n = $(node).find(gSelector).first();
-										iterateThrough(gData, elem[key], $(n));
-									}
-
+								if (!gAttribute && n.get(0).tagName === "img") {
+									gAttribute = "src"
 								}
 
-							} else {
-
-								var n = getNodeFromSmartSelector($(node), gSelector)
-
-								if (n.length > 0) {
-
-									if (!gAttribute && n.get(0).tagName === "img") {
-										gAttribute = "src"
-									}
-
-									if (timestats) {
-										elem[key] = {}
-										elem[key]['_value'] = getTheRightData($(n), {
-											type: gType,
-											attr: gAttribute,
-											parse: gParse
-										});
-										elem[key]['_timestat'] = timeSpent(gTime)
-									} else {
-										elem[key] = getTheRightData($(n), {
-											type: gType,
-											attr: gAttribute,
-											parse: gParse
-										});
-									}
-
+								if (timestats) {
+									elem[key] = {}
+									elem[key]['_value'] = getTheRightData(n, {
+										type: gType,
+										attr: gAttribute,
+										parse: gParse
+									})
+									elem[key]['_timestat'] = timeSpent(gTime)
 								} else {
-									elem[key] = null;
+									elem[key] = getTheRightData(n, {
+										type: gType,
+										attr: gAttribute,
+										parse: gParse
+									})
 								}
-							}
-						}
 
-						// There is no Selector but still an Object for organization
-						else {
-							elem[key] = {};
-							iterateThrough(obj[key], elem[key], node);
-						}
-					}
 
-					// The Parameter is a single string === selector > directly scraped
-					else {
-
-						gINFO = extractSmartSelector({selector: obj[key]})
-						gSelector = gINFO.selector
-						gParse = gParse ? gParse : gINFO.parse
-						gAttribute = gAttribute ? gAttribute : gINFO.attribute
-						gType = gType ? gType : gINFO.type
-
-						var n = getNodeFromSmartSelector($(node), gSelector)
-						// console.log(object);
-						if (n.length > 0) {
-
-							if (!gAttribute && n.get(0).tagName === "img") {
-								gAttribute = "src"
-							}
-
-							if (timestats) {
-								elem[key] = {}
-								elem[key]['_value'] = getTheRightData(n, {
-									type: gType,
-									attr: gAttribute,
-									parse: gParse
-								})
-								elem[key]['_timestat'] = timeSpent(gTime)
 							} else {
-								elem[key] = getTheRightData(n, {
-									type: gType,
-									attr: gAttribute,
-									parse: gParse
-								})
+								elem[key] = null
 							}
-
-
-						} else {
-							elem[key] = null
 						}
+
+					} catch (error) {
+						console.log(error)
 					}
 
-				} catch (error) {
-					console.log(error)
+
 				}
 
 			})
