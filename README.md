@@ -61,7 +61,7 @@ let frame = {
 	}
 }
 
-console.log( $('body').scrape(frame) );
+console.log( JSON.stringify( $('body').scrape(frame) ,null,2) );
 /*=> 
 {
 	"title": "I love jsonframe!",
@@ -149,7 +149,7 @@ We then pass the frame to the function:
 
 ```js
 var result = $('body').scrape(frame);
-console.log( result );
+console.log(JSON.stringify( result , null, 2 ))
 //=> {"title": "Pricing"}
 ```
 
@@ -163,7 +163,7 @@ Most common selector, `inline line` by specifying nothing more than the data nam
 var frame = { "title": "h2" }
 
 var result = $('body').scrape(frame)
-console.log(result)
+console.log(JSON.stringify( result , null, 2 ))
 
 /* output =>
 	{ "title": "Pricing" }
@@ -184,7 +184,7 @@ var frame = {
 };
 
 var result = $('body').scrape(frame)
-console.log(result)
+console.log(JSON.stringify( result , null, 2 ))
 
 /* output =>
 	{ "proPrice": "39.00" }
@@ -212,7 +212,7 @@ var frame = {
 };
 
 var result = $('body').scrape(frame)
-console.log(result)
+console.log(JSON.stringify( result , null, 2 ))
 
 /* output =>
 	{ 
@@ -236,7 +236,7 @@ var frame = {
 }
 
 var result = $('body').scrape(frame)
-console.log(result)
+console.log(JSON.stringify( result , null, 2 ))
 
 /* output =>
 	{ 
@@ -264,7 +264,7 @@ var frame = {
 }
 
 var result = $('body').scrape(frame)
-console.log(result)
+console.log(JSON.stringify( result , null, 2 ))
 
 /* output =>
 	{ 
@@ -301,7 +301,7 @@ var frame = {
 }
 
 var result = $('body').scrape(frame)
-console.log(result)
+console.log(JSON.stringify( result , null, 2 ))
 
 /* output =>
 	{ 
@@ -345,7 +345,7 @@ var frame = {
 }
 
 var result = $('body').scrape(frame)
-console.log(result)
+console.log(JSON.stringify( result , null, 2 ))
 
 /* output =>
 	{ 
@@ -390,7 +390,7 @@ var frame = {
 };
 
 var result = $('body').scrape(frame, {timestats: true})
-console.log(result)
+console.log(JSON.stringify( result , null, 2 ))
 
 /* output =>
 	{ 
