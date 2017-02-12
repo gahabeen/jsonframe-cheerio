@@ -1,5 +1,6 @@
 'use strict';
 
+const xpath = require('xpath')
 const _ = require('lodash')
 
 /**
@@ -72,7 +73,8 @@ var getPropertyFromObj = function (obj, propertyName) {
 		'attribute': ['attr', 'attribute', '_attr', '_a'],
 		'type': ['type', '_t'],
 		'data': ['data', '_d', '_data'],
-		'parse': ['parse', '_parse', '_p']
+		'parse': ['parse', '_parse', '_p'],
+		'group': ['_g', '_group']
 	}
 	var ob = this
 	var res = null
@@ -100,8 +102,9 @@ var timeSpent = function (lastTime) {
 }
 
 String.prototype.oneSplitFromEnd = function (char) {
-	var arr = this.split(char), res = []
-	
+	var arr = this.split(char),
+		res = []
+
 	res[1] = arr[arr.length - 1]
 	arr.pop()
 	res[0] = arr.join(char)
@@ -164,29 +167,36 @@ module.exports = function ($) {
 				// Security for jsonpath in "_to" > "_frame"
 				if (key === "_frame" || key === "_from") {
 					elem[key] = obj[key]
-				} else if(key === "_g") {
-					
 				} else {
 
 					try {
 
-						var gSelector, gAttribute, gType, gData, gParse, gINFO
+						var gSelector, gAttribute, gType, gData, gParse, gGroup, gINFO
 
-						if (_.isObject(obj[key])) {
-
+						if (_.isObject(obj[key]) && !_.isArray(obj[key])) {
 							gSelector = getPropertyFromObj(obj[key], 'selector')
 							gAttribute = getPropertyFromObj(obj[key], 'attribute')
 							gType = getPropertyFromObj(obj[key], 'type')
 							gData = getPropertyFromObj(obj[key], 'data')
 							gParse = getPropertyFromObj(obj[key], 'parse')
+							gGroup = getPropertyFromObj(obj, 'group')
+							// console.log("gSelector", gSelector);
+							// console.log("gData", gData);
 
 							// console.log("gParse", gParse);
 
-							if (gSelector && _.isString(gSelector)) {
+
+							if (gSelector && gData && _.isObject(gGroup)) {
+
+								var n = getNodeFromSmartSelector($(node), gSelector)
+								iterateThrough(gData, elem, $(n))
+
+							} else if (gSelector && _.isString(gSelector)) {
 
 								gINFO = extractSmartSelector({
 									selector: gSelector
 								})
+
 								gSelector = gINFO.selector
 								gParse = gParse ? gParse : gINFO.parse
 								gAttribute = gAttribute ? gAttribute : gINFO.attribute
@@ -194,7 +204,7 @@ module.exports = function ($) {
 
 								if (gData && _.isObject(gData)) {
 
-									if (Array.isArray(gData)) {
+									if (_.isArray(gData)) {
 
 										// Check if object in array
 										if (_.isObject(gData[0]) && _.size(gData[0]) > 0) {
@@ -284,8 +294,44 @@ module.exports = function ($) {
 								elem[key] = {};
 								iterateThrough(obj[key], elem[key], node);
 							}
-						}
+						} else if (_.isArray(obj[key])) {
 
+							if (_.isString(obj[key][0])) {
+
+								gINFO = extractSmartSelector({
+									selector: obj[key][0]
+								})
+								gSelector = gINFO.selector
+								gParse = gParse ? gParse : gINFO.parse
+								gAttribute = gAttribute ? gAttribute : gINFO.attribute
+								gType = gType ? gType : gINFO.type
+
+								elem[key] = []
+								var n = getNodeFromSmartSelector($(node), gSelector)
+
+								if (timestats) {
+									elem[key] = {}
+									elem[key]['_value'] = []
+									n.each(function (i, n) {
+										elem[key]['_value'][i] = getTheRightData($(n), {
+											type: gType,
+											attr: gAttribute,
+											parse: gParse
+										})
+									});
+									elem[key]['_timestat'] = timeSpent(gTime)
+								} else {
+									n.each(function (i, n) {
+										elem[key][i] = getTheRightData($(n), {
+											type: gType,
+											attr: gAttribute,
+											parse: gParse
+										})
+									});
+								}
+
+							}
+						}
 						// The Parameter is a single string === selector > directly scraped
 						else {
 
