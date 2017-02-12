@@ -12,15 +12,30 @@ var getTheRightData = function (node, {
 } = {}) {
 
 	var result = null
-	if (!attr && extractor === "html") {
-		result = parseData(filterData(node.html(),filter), parser)
-	} else if (!attr && extractor){
-		result = extractByExtractor(node.text(), extractor)
-	} else if (!attr) {
-		result = parseData(filterData(extractByExtractor(node.text(), extractor), filter), parser)
+
+	if(attr) {
+		result = node.attr(attr)
+	} else if (extractor === "html"){
+		result = node.html()
 	} else {
-		result = parseData(filterData(node.attr(attr), filter), parser)
+		result = node.text()
 	}
+
+	console.log("filter", filter);
+
+	if(extractor && extractor !== "html"){ result = extractByExtractor(result, extractor) }
+	if(filter){ result = filterData(result, filter) }
+	if(parser){ result = parseData(result, parser) }
+
+	// if (!attr && extractor === "html") {
+	// 	result = parseData(filterData(node.html(),filter), parser)
+	// } else if (!attr && extractor){
+	// 	result = extractByExtractor(node.text(), extractor)
+	// } else if (!attr) {
+	// 	result = parseData(filterData(extractByExtractor(node.text(), extractor), filter), parser)
+	// } else {
+	// 	result = parseData(filterData(node.attr(attr), filter), parser)
+	// }
 
 	return result
 }
@@ -44,15 +59,15 @@ var parseData = function (data, regex) {
 
 var filterData = function(data, filter) {
 	var result = data
-	if (filter === "raw") {
+	if (["raw"].includes(filter)) {
 		// let the raw data
-	} else if (filter === "trim"){
+	} else if (["trim"].includes(filter)){
 		result = result.trim()
-	} else if (filter === "lowercase"){
+	} else if (["lowercase", "lcase"].includes(filter)){
 		result = result.toLowerCase()
-	} else if (filter === "uppercase"){
+	} else if (["uppercase", "ucase"].includes(filter)){
 		result = result.toUpperCase()
-	} else if (filter === "capitalize"){
+	} else if (["capitalize", "cap"].includes(filter)){
 		result = _.startCase(result)
 	} else if(result) {
 		// Default trim and set one spaces
@@ -227,7 +242,7 @@ module.exports = function ($) {
 
 								gSelector = gINFO.selector
 								gParser = gParser ? gParser : gINFO.parser
-								gFilter = gFilter ? gFilter : gINFO.parser
+								gFilter = gFilter ? gFilter : gINFO.filter
 								gAttribute = gAttribute ? gAttribute : gINFO.attribute
 								gExtractor = gExtractor ? gExtractor : gINFO.extractor
 
@@ -337,7 +352,7 @@ module.exports = function ($) {
 
 								gSelector = gINFO.selector
 								gParser = gParser ? gParser : gINFO.parser
-								gFilter = gFilter ? gFilter : gINFO.parser
+								gFilter = gFilter ? gFilter : gINFO.filter
 								gAttribute = gAttribute ? gAttribute : gINFO.attribute
 								gExtractor = gExtractor ? gExtractor : gINFO.extractor
 
@@ -378,7 +393,7 @@ module.exports = function ($) {
 
 							gSelector = gINFO.selector
 							gParser = gParser ? gParser : gINFO.parser
-							gFilter = gFilter ? gFilter : gINFO.parser
+							gFilter = gFilter ? gFilter : gINFO.filter
 							gAttribute = gAttribute ? gAttribute : gINFO.attribute
 							gExtractor = gExtractor ? gExtractor : gINFO.extractor
 
