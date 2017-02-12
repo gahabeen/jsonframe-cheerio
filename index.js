@@ -1,6 +1,8 @@
 'use strict';
 
 const _ = require('lodash')
+const chrono = require('chrono-node')
+const humanname = require('humanname')
 
 var getTheRightData = function (node, {
 	attr = null,
@@ -12,10 +14,12 @@ var getTheRightData = function (node, {
 	var result = null
 	if (!attr && extractor === "html") {
 		result = parseData(filterData(node.html(),filter), parser)
+	} else if (!attr && extractor){
+		result = extractByExtractor(node.text(), extractor)
 	} else if (!attr) {
 		result = parseData(filterData(extractByExtractor(node.text(), extractor), filter), parser)
 	} else {
-		result = parseData(filterData(extractByExtractor(node.attr(attr), extractor), filter), parser)
+		result = parseData(filterData(node.attr(attr), filter), parser)
 	}
 
 	return result
@@ -44,7 +48,7 @@ var filterData = function(data, filter) {
 		// let the raw data
 	} else if (filter === "trim"){
 		result = result.trim()
-	} else {
+	} else if(result) {
 		// Default trim and set one spaces
 		result = result.replace(/\s+/gm, " ").trim()
 	}
@@ -59,6 +63,23 @@ var extractByExtractor = function (data, extractor) {
 		result = data.replace(/\D/g, "") || data
 	} else if (["email", "mail", "@"].includes(extractor)) {
 		result = data.match(emailRegex)[0] || data
+	} else if (["date", "d"].includes(extractor)){
+		result = chrono.casual.parseDate(data).toString()
+	} else if (["fullName", "firstName", "lastName", "initials", "suffix", "salutation"].includes(extractor)){
+		result = humanname.parse(data)
+		if("fullName".includes(extractor)){
+			 // return the object
+		} else if("firstName".includes(extractor)){
+			result = result.firstName
+		} else if("lastName".includes(extractor)){
+			result = result.lastName
+		} else if("initials".includes(extractor)){
+			result = result.initials
+		} else if("suffix".includes(extractor)){
+			result = result.suffix
+		} else if("salutation".includes(extractor)){
+			result = result.salutation
+		}
 	}
 
 	return result

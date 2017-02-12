@@ -122,7 +122,7 @@ Let's take the following `HTML example`:
 `{options}` are detailed [later in its own section](#options)
 
 ```js
-var frame = {
+let frame = {
 	"title": "h2" // CSS selector
 };
 ```
@@ -130,7 +130,7 @@ var frame = {
 We then pass the frame to the function:
 
 ```js
-var result = $('body').scrape(frame);
+let result = $('body').scrape(frame);
 console.log(JSON.stringify( result , null, 2 ))
 //=> {"title": "Pricing"}
 ```
@@ -142,9 +142,9 @@ Most common selector, `inline line` by specifying nothing more than the data nam
 
 ```js
 ...
-var frame = { "title": "h2" }
+let frame = { "title": "h2" }
 
-var result = $('body').scrape(frame)
+let result = $('body').scrape(frame)
 console.log(JSON.stringify( result , null, 2 ))
 
 /* output =>
@@ -164,11 +164,11 @@ _See examples for each of them above._
 
 ```js
 ...
-var frame = {
+let frame = {
 	"proPrice": ".planName:contains('Pro') + span@price"
 }
 
-var result = $('body').scrape(frame)
+let result = $('body').scrape(frame)
 console.log(JSON.stringify( result , null, 2 ))
 
 /* output =>
@@ -185,12 +185,12 @@ It currently supports `email` (also `mail`), `telephone` (also `phone`) and `htm
 
 ```js
 ...
-var frame = { 
+let frame = { 
 	"email": "[itemprop=email] < phone",
 	"frphone": "[itemprop=frphone] < phone"
 }
 
-var result = $('body').scrape(frame)
+let result = $('body').scrape(frame)
 console.log(JSON.stringify( result , null, 2 ))
 
 /* output =>
@@ -209,20 +209,20 @@ console.log(JSON.stringify( result , null, 2 ))
 
 ```js
 ...
-var frame = { 
+let frame = { 
 	"data": ".date || \\d{1,2}/\\d{1,2}/\\d{2,4}"
 }
 
 // or use the longer version for proper regex entry
 
-var frame = {
+let frame = {
 	"data": {
 		_s: ".date",
 		_p: /\d{1,2}\/\d{1,2}\/\d{2,4}/ // n[n]/n[n]/nn[nn] format here
 	}
 }
 
-var result = $('body').scrape(frame)
+let result = $('body').scrape(frame)
 console.log(JSON.stringify( result , null, 2 ))
 
 /* output =>
@@ -242,7 +242,7 @@ You could even shorten it more by listing right from the selector as follows:
 
 ```js
 ...
-var frame = { 
+let frame = { 
 	"pricing": {
 		_s: "#pricing .item",
 		_d: [{
@@ -252,7 +252,7 @@ var frame = {
 	}	
 }
 
-var result = $('body').scrape(frame)
+let result = $('body').scrape(frame)
 console.log(JSON.stringify( result , null, 2 ))
 
 /* output =>
@@ -272,11 +272,11 @@ console.log(JSON.stringify( result , null, 2 ))
 
 // Or a shorter way which works for simple string arrays
 
-var frame = { 
+let frame = { 
 	"pricingNames": ["#pricing .item .planName"]
 }
 
-var result = $('body').scrape(frame)
+let result = $('body').scrape(frame)
 console.log(JSON.stringify( result , null, 2 ))
 
 /* output =>
@@ -291,7 +291,7 @@ console.log(JSON.stringify( result , null, 2 ))
 
 ```js
 ...
-var frame = { 
+let frame = { 
 	_g: {
 		_s: "#pricing .item",
 		_d: {
@@ -301,7 +301,7 @@ var frame = {
 	}	
 }
 
-var result = $('body').scrape(frame)
+let result = $('body').scrape(frame)
 console.log(JSON.stringify( result , null, 2 ))
 
 /* output =>
@@ -320,7 +320,7 @@ You can also use `"parent": { }` when you only want to nest data into objects wi
 
 ```js
 ...
-var frame = { 
+let frame = { 
 	"pricing": {
 		_s: "#pricing .item",
 		_d: {
@@ -330,7 +330,7 @@ var frame = {
 	}	
 }
 
-var result = $('body').scrape(frame)
+let result = $('body').scrape(frame)
 console.log(JSON.stringify( result , null, 2 ))
 
 /* output =>
@@ -351,7 +351,7 @@ See how you can properly `structure your data`, ready for the output!
 
 ```js
 ...
-var frame = { 
+let frame = { 
 	"pricing": {
 		_s: "#pricing .item",
 		_d: [{
@@ -365,7 +365,7 @@ var frame = {
 	}	
 }
 
-var result = $('body').scrape(frame)
+let result = $('body').scrape(frame)
 console.log(JSON.stringify( result , null, 2 ))
 
 /* output =>
@@ -403,14 +403,14 @@ Measure time spent on each node (in milliseconds)
 
 ```js
 ...
-var frame = { 
+let frame = { 
 	"proPrice": {
 		_s: ".planName:contains('Pro') + span",
 		_a: "price"
 	}	
 };
 
-var result = $('body').scrape(frame, {timestats: true})
+let result = $('body').scrape(frame, {timestats: true})
 console.log(JSON.stringify( result , null, 2 ))
 
 /* output =>
