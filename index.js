@@ -48,6 +48,12 @@ var filterData = function(data, filter) {
 		// let the raw data
 	} else if (filter === "trim"){
 		result = result.trim()
+	} else if (filter === "lowercase"){
+		result = result.toLowerCase()
+	} else if (filter === "uppercase"){
+		result = result.toUpperCase()
+	} else if (filter === "capitalize"){
+		result = _.startCase(result)
 	} else if(result) {
 		// Default trim and set one spaces
 		result = result.replace(/\s+/gm, " ").trim()
