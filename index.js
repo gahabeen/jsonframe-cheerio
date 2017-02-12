@@ -41,6 +41,8 @@ var parseData = function (data, regex) {
 	return result
 }
 
+var filter
+
 var extractByExtractor = function (data, extractor) {
 	var result = data
 	var emailRegex = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi
@@ -58,7 +60,7 @@ var getPropertyFromObj = function (obj, propertyName) {
 	var properties = {
 		'selector': ['selector', '_s', '_selector'],
 		'attribute': ['attr', 'attribute', '_attr', '_a'],
-		'filtor': ['filtor', '_filtor', '_f'],
+		'filter': ['filter', '_filter', '_f'],
 		'extractor': ['extractor', '_e', 'type', '_t'], //keep temporary old types
 		'data': ['data', '_d', '_data'],
 		'parser': ['parse', '_parse', '_p'],
@@ -102,14 +104,14 @@ String.protoextractor.oneSplitFromEnd = function (char) {
 var extractSmartSelector = function ({
 	selector,
 	attribute = null,
-	filtor = null,
+	filter = null,
 	extractor = null,
 	parse = null
 }) {
 	var res = {
 		"selector": selector,
 		"attribute": attribute,
-		"filtor": filtor,
+		"filter": filter,
 		"extractor": extractor,
 		"parse": parse
 	}
@@ -123,7 +125,7 @@ var extractSmartSelector = function ({
 	}
 
 	if (res.selector.includes('|')) {
-		res.filtor = res.selector.oneSplitFromEnd('|')[1].trim()
+		res.filter = res.selector.oneSplitFromEnd('|')[1].trim()
 		res.selector = res.selector.oneSplitFromEnd('|')[0].trim()
 	}
 
@@ -171,7 +173,7 @@ module.exports = function ($) {
 						if (_.isObject(obj[key]) && !_.isArray(obj[key])) {
 							gSelector = getPropertyFromObj(obj[key], 'selector')
 							gAttribute = getPropertyFromObj(obj[key], 'attribute')
-							gFiltor = getPropertyFromObj(obj[key], 'filtor')
+							gFilter = getPropertyFromObj(obj[key], 'filter')
 							gExtractor = getPropertyFromObj(obj[key], 'extractor')
 							gData = getPropertyFromObj(obj[key], 'data')
 							gParse = getPropertyFromObj(obj[key], 'parser')
