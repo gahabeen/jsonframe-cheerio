@@ -171,17 +171,29 @@ console.log(JSON.stringify( result , null, 2 ))
 ...
 ```
 
+#### New : Inline attribute / type / parser
+You can now declare everything in line. You should just be careful to always use them in the following order when combining them : `@ (attribute), | (type), || (parse)`.
+
+_See examples for each of them above._
+
 #### Attribute
-`_s: "attributeName"` allows you to retrieve `any attribute data`
+`_a: "attributeName"` allows you to retrieve `any attribute data`  
+`@` inside the selector `_s` allows you to do it inline
 
 ```js
 ...
+var frame = {
+	"proPrice": ".planName:contains('Pro') + span@price"
+}
+
+// or the longer version
+
 var frame = { 
 	"proPrice": {
 		_s: ".planName:contains('Pro') + span",
 		_a: "price"
 	}	
-};
+}
 
 var result = $('body').scrape(frame)
 console.log(JSON.stringify( result , null, 2 ))
@@ -194,13 +206,21 @@ console.log(JSON.stringify( result , null, 2 ))
 
 
 #### Type (plugin parsing features)
-`_t: "typeName"` allows you to parse specific data like `telephone` or `email`.
+`_t: "typeName"` allows you to parse specific data like `telephone` or `email`  
+`|` inside the selector `_s` allows you to do it inline
 
-It currently supports `email` (also `mail`), `telephone` (also `phone`) and `html` (to get the inner html).
+It currently supports `email` (also `mail`), `telephone` (also `phone`) and `html` (to get the inner html) and by default (no declaration), we get the `inner text`.
 
 ```js
 ...
 var frame = { 
+	"email": "[itemprop=email]|phone",
+	"frphone": "[itemprop=frphone]|phone"
+}
+
+// or the longer version
+
+var frame = {
 	"email": {
 		_s: "[itemprop=email]",
 		_t: "email"		
@@ -209,7 +229,7 @@ var frame = {
 		_s: "[itemprop=frphone]",
 		_t: "phone"	
 	}
-};
+}
 
 var result = $('body').scrape(frame)
 console.log(JSON.stringify( result , null, 2 ))
@@ -224,10 +244,17 @@ console.log(JSON.stringify( result , null, 2 ))
 ```
 
 #### Parse / Regex
-`_p: /regex/` allows you to extract data based on **regular expressions**
+`_p: /regex/` allows you to extract data based on **regular expressions**  
+`||` inside the selector `_s` allows you to do it inline
 
 ```js
 ...
+var frame = { 
+	"data": ".date||\\d{1,2}/\\d{1,2}/\\d{2,4}"
+}
+
+// or the longer version
+
 var frame = {
 	"data": {
 		_s: ".date",
@@ -247,9 +274,11 @@ console.log(JSON.stringify( result , null, 2 ))
 ```
 
 #### List / Array
-`_d: [{ }]` allows you to get an `array / list of data`.  
+`_d: [{ }]` allows you to get an `array / list of data`  
+`_d: ["_parent_"]` will retrieves a list based on the parent selector  
 
-It can also be `_d: ["_parent_"]` in which case it retrieves a list based on the parent selector.
+You could even shorten it more by listing right from the selector as follows:  
+`"selectorName": [".selector"]`
 
 ```js
 ...
@@ -281,6 +310,21 @@ console.log(JSON.stringify( result , null, 2 ))
 	}
 */
 ...
+
+// Or a shorter way which works for simple string arrays
+
+var frame = { 
+	"pricingNames": ["#pricing .item .planName"]
+}
+
+var result = $('body').scrape(frame)
+console.log(JSON.stringify( result , null, 2 ))
+
+/* output =>
+	{ 
+		"pricingNames": ["Hacker", "Pro"]	
+	}
+*/
 ```
 
 #### Nested
@@ -428,4 +472,5 @@ npm run test-watch
 
 
 ## License
+[Gabin Desserprit](mailto:gabin@datascraper.pro) - [datascraper.pro](datascraper.pro)  
 Released under MIT License

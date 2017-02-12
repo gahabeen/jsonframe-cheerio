@@ -24,10 +24,6 @@ var getTheRightData = function (node, {
 	return result
 }
 
-function escapeRegExp(string) {
-	return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
-}
-
 var parseData = function (data, regex) {
 	var result = data
 	if (regex) {

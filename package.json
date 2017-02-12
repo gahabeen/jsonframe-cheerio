@@ -17,6 +17,7 @@
     "scraper",
     "frame",
     "json",
+    "parser",
     "template"
   ],
   "repository": {
