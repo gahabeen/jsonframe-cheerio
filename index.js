@@ -40,16 +40,11 @@ var parseData = function (data, regex) {
 	var result = data
 	if (regex) {
 		try {
+			var rgx = regex
 			if (_.isString(regex)) {
-
-				var rgx = new RegExp(regex, 'gim')
-				// console.log("rgx", rgx)
-				// console.log("data.match(rgx)", data.match(rgx))
-				result = data.match(rgx)[0]
-
-			} else {
-				result = data.match(regex)[0]
+				rgx = new RegExp(regex, 'gim')
 			}
+			result = data.match(rgx)[0]
 		} catch (error) {
 			// console.log("Regex error: ", error);
 		}
