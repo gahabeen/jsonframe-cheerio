@@ -1,14 +1,6 @@
 'use strict';
 
-const xpath = require('xpath')
 const _ = require('lodash')
-
-/**
- * Plugin function.
- * @param  {json} frame with DOM selectors.
- * @param  {function?} handle the frame json structure to output the scraped version
- * @return {javascript object} with the scraped structured data 
- */
 
 var cleanEntry = function (text) {
 	return text.replace(/\s+/gm, " ").trim()
