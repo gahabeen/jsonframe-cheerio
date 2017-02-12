@@ -1,7 +1,7 @@
 <h2 align="center"><i>json</i>frame</h2> 
 
 <h4 align="center">
-	<span>smart & powerful multi-level scraper with json input/output</span><br>
+	<span>simple multi-level scraper json input/output</span><br>
 	<br>
 	<a href="https://www.npmjs.com/package/jsonframe-cheerio">
 		<img src="https://img.shields.io/badge/npm-jsonframe--cheerio-green.svg" alt="npm jsonframe-cheerio">
@@ -16,35 +16,14 @@
 
 ****
 
-## Features
+## **2.0.0** features
 
-😍 **JSON Syntax**: `json frame` gives you the ability to scrape any multi-level structured data from a JSON object to another JSON object as output.
+😍 **JSON Syntax**: input json, output the same structured json including with scraped data
 
-🌈 **Simple & Crazy Fast**: forget about the coding and focus on the data to extract - see them being scraped at light speed.
+🌈 **Simple patterns**: simple inline `selectors`, `extractors`, `filters` and `parser`.
 
-💪 **Supercharged**: `json frame` also includes in its core some amazing features like **email**, **phone** or **regex** parsing / extraction.
+💪 **Reliable & fast**: used in production within crawlers
 
-## History
-
-12/02/2017: 1.1.3
-- Adding inline parameters support for `"attribute"`, `"extractor"` and `"parse"`
-- Adding simple string arrays from inline selector
-- Adding group property to group data selectors whitout naming the group (childs take the place of the group property `"_g"` or `"_group"` )
-
-
-05/02/2017: 1.1.1  
-- Adding short & functionnal parameters ( `_s`, `_t`, `_a`) instead of `"selector"`, `"extractor"`, `"attr"`. Idea behind being to easily differentiate **retrieved data name** to **functionnal data**.
-- Adding an automatic handler for `img` selected element (automatically retrieve the img src link)
-- Adding the `_parent_` selector to target the **parent content**
-- Adding a **regex parser** with the functionnal parameter **parse**: `_p` (`_parse` works too)
-- Adding **extractor** `_t: "html"` feature to get back **inner html of a selector**
-- Added **timestats** to measure time spent on each node via `.scrape(frame, {timestats: true})`
-- Refactorization of the whole code to make it evolutive (DRY)
-- Update of the tests cases accordingly
-
-
-27/01/2017: 1.0.0 
-- Stable version release with basic features  
 
 ## Example
 
@@ -61,7 +40,7 @@ jsonframe($); // initializing the plugin
 
 let frame = {
 	"title": "h1", // this is an inline selector
-	"email": "span[itemprop=email] |email" // output an extracted email
+	"email": "span[itemprop=email] < email" // output an extracted email
 }
 
 console.log( JSON.stringify( $('body').scrape(frame) ,null,2) );
@@ -189,15 +168,6 @@ var frame = {
 	"proPrice": ".planName:contains('Pro') + span@price"
 }
 
-// or the longer version
-
-var frame = { 
-	"proPrice": {
-		_s: ".planName:contains('Pro') + span",
-		_a: "price"
-	}	
-}
-
 var result = $('body').scrape(frame)
 console.log(JSON.stringify( result , null, 2 ))
 
@@ -209,7 +179,6 @@ console.log(JSON.stringify( result , null, 2 ))
 
 
 #### Extractor
-`_t: "extractorName"` allows you to parse specific data like `telephone` or `email`  
 `|` inside the selector `_s` allows you to do it inline
 
 It currently supports `email` (also `mail`), `telephone` (also `phone`) and `html` (to get the inner html) and by default (no declaration), we get the `inner text`.
@@ -217,21 +186,8 @@ It currently supports `email` (also `mail`), `telephone` (also `phone`) and `htm
 ```js
 ...
 var frame = { 
-	"email": "[itemprop=email]|phone",
-	"frphone": "[itemprop=frphone]|phone"
-}
-
-// or the longer version
-
-var frame = {
-	"email": {
-		_s: "[itemprop=email]",
-		_t: "email"		
-	},
-	"frphone": {
-		_s: "[itemprop=frphone]",
-		_t: "phone"	
-	}
+	"email": "[itemprop=email] < phone",
+	"frphone": "[itemprop=frphone] < phone"
 }
 
 var result = $('body').scrape(frame)
@@ -247,21 +203,22 @@ console.log(JSON.stringify( result , null, 2 ))
 ```
 
 #### Parse / Regex
+`||` inside the selector `_s` allows you to use regexes in line
 `_p: /regex/` allows you to extract data based on **regular expressions**  
-`||` inside the selector `_s` allows you to do it inline
+
 
 ```js
 ...
 var frame = { 
-	"data": ".date||\\d{1,2}/\\d{1,2}/\\d{2,4}"
+	"data": ".date || \\d{1,2}/\\d{1,2}/\\d{2,4}"
 }
 
-// or the longer version
+// or use the longer version for proper regex entry
 
 var frame = {
 	"data": {
 		_s: ".date",
-		_p: /\d{1,2}\/\d{1,2}\/\d{2,4}/ // n[n]/n[n]/nn[nn] format
+		_p: /\d{1,2}\/\d{1,2}\/\d{2,4}/ // n[n]/n[n]/nn[nn] format here
 	}
 }
 
@@ -280,8 +237,8 @@ console.log(JSON.stringify( result , null, 2 ))
 `_d: [{ }]` allows you to get an `array / list of data`  
 `_d: ["_parent_"]` will retrieves a list based on the parent selector  
 
-You could even shorten it more by listing right from the selector as follows:  
-`"selectorName": [".selector"]`
+You could even shorten it more by listing right from the selector as follows: 
+`"selectorName": [".selector"]` which returns an array of strings
 
 ```js
 ...
@@ -312,7 +269,6 @@ console.log(JSON.stringify( result , null, 2 ))
 		]	
 	}
 */
-...
 
 // Or a shorter way which works for simple string arrays
 
@@ -328,6 +284,7 @@ console.log(JSON.stringify( result , null, 2 ))
 		"pricingNames": ["Hacker", "Pro"]	
 	}
 */
+...
 ```
 #### Grouped
 `"_g": { _s: "", _d: {} }` allows you to group some data selectors by a parent selector without naming the parent
@@ -399,19 +356,10 @@ var frame = {
 		_s: "#pricing .item",
 		_d: [{
 			"name": ".planName",
-			"price": {
-				_s: ".planPrice",
-				_a: "price"
-			},
+			"price": ".planPrice @ price",
 			"image": {
-				"url": {
-					_s: "img",
-					_a: "src"
-				},
-				"link": {
-					_s: "a",
-					_a: "href"
-				}
+				"url": "img @ src",
+				"link": "a @href"
 			}
 		}]
 	}	
@@ -488,6 +436,31 @@ Watching test on updates
 ```bash
 npm run test-watch
 ```
+
+
+## Changelog
+
+**2.0.0** (12/02/2017)
+- ⚠ Changing  ~~`Type`~~ for `Extractor` with shortcode `<` instead of `|`
+- ⚠ Adding `filters` with the shortcode `|`
+- Adding inline parameters support for `"attribute"`, `"extractor"` and `"parse"`
+- Adding simple string arrays from inline selector
+- Adding group property to group data selectors whitout naming the group (childs take the place of the group property `"_g"` or `"_group"` )
+
+
+**1.1.1** (05/02/2017)
+- Adding short & functionnal parameters ( `_s`, `_t`, `_a`) instead of `"selector"`, `"extractor"`, `"attr"`. Idea behind being to easily differentiate **retrieved data name** to **functionnal data**.
+- Adding an automatic handler for `img` selected element (automatically retrieve the img src link)
+- Adding the `_parent_` selector to target the **parent content**
+- Adding a **regex parser** with the functionnal parameter **parse**: `_p` (`_parse` works too)
+- Adding **extractor** `_t: "html"` feature to get back **inner html of a selector**
+- Added **timestats** to measure time spent on each node via `.scrape(frame, {timestats: true})`
+- Refactorization of the whole code to make it evolutive (DRY)
+- Update of the tests cases accordingly
+
+
+**1.0.0** (27/01/2017)
+- Stable version release with basic features  
 
 ## Contributing 🤝
 > Feel free to follow the procedure to make it even more awesome!

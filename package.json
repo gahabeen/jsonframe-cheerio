@@ -1,7 +1,7 @@
 {
   "name": "jsonframe-cheerio",
   "version": "2.0.0",
-  "description": "simple inline multi-level scraper json input/output",
+  "description": "simple multi-level scraper json input/output",
   "main": "index.js",
   "scripts": {
     "test": "mocha tests/**/*.test.js",

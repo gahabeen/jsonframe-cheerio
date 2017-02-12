@@ -2,7 +2,6 @@
 
 const _ = require('lodash')
 
-
 var getTheRightData = function (node, {
 	attr = null,
 	extractor = null,
