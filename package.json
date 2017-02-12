@@ -1,6 +1,6 @@
 {
   "name": "jsonframe-cheerio",
-  "version": "1.1.3",
+  "version": "2.0.0",
   "description": "smart & powerful multi-level scraper with json input/output",
   "main": "index.js",
   "scripts": {
@@ -29,13 +29,14 @@
   },
   "license": "ISC",
   "devDependencies": {
+    "cheerio": "^0.22.0",
     "expect": "^1.20.2",
     "lodash": "^4.17.4",
     "mocha": "^3.2.0",
     "nodemon": "^1.11.0",
-    "cheerio": "^0.22.0",
-    "xpath": "0.0.23",
-    "xmldom": "^0.1.27"
+    "unfluff": "^1.1.0",
+    "xmldom": "^0.1.27",
+    "xpath": "0.0.23"
   },
   "dependencies": {
     "lodash": "^4.17.4"

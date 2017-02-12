@@ -27,17 +27,17 @@
 ## History
 
 12/02/2017: 1.1.3
-- Adding inline parameters support for `"attribute"`, `"type"` and `"parse"`
+- Adding inline parameters support for `"attribute"`, `"extractor"` and `"parse"`
 - Adding simple string arrays from inline selector
 - Adding group property to group data selectors whitout naming the group (childs take the place of the group property `"_g"` or `"_group"` )
 
 
 05/02/2017: 1.1.1  
-- Adding short & functionnal parameters ( `_s`, `_t`, `_a`) instead of `"selector"`, `"type"`, `"attr"`. Idea behind being to easily differentiate **retrieved data name** to **functionnal data**.
+- Adding short & functionnal parameters ( `_s`, `_t`, `_a`) instead of `"selector"`, `"extractor"`, `"attr"`. Idea behind being to easily differentiate **retrieved data name** to **functionnal data**.
 - Adding an automatic handler for `img` selected element (automatically retrieve the img src link)
 - Adding the `_parent_` selector to target the **parent content**
 - Adding a **regex parser** with the functionnal parameter **parse**: `_p` (`_parse` works too)
-- Adding **type** `_t: "html"` feature to get back **inner html of a selector**
+- Adding **extractor** `_t: "html"` feature to get back **inner html of a selector**
 - Added **timestats** to measure time spent on each node via `.scrape(frame, {timestats: true})`
 - Refactorization of the whole code to make it evolutive (DRY)
 - Update of the tests cases accordingly
@@ -174,8 +174,8 @@ console.log(JSON.stringify( result , null, 2 ))
 ...
 ```
 
-#### New : Inline attribute / type / parser
-You can now declare everything in line. You should just be careful to always use them in the following order when combining them : `@ (attribute), | (type), || (parse)`.
+#### New : Inline attribute / extractor / parser
+You can now declare everything in line. You should just be careful to always use them in the following order when combining them : `@ (attribute), | (extractor), || (parse)`.
 
 _See examples for each of them above._
 
@@ -208,8 +208,8 @@ console.log(JSON.stringify( result , null, 2 ))
 ```
 
 
-#### Type (plugin parsing features)
-`_t: "typeName"` allows you to parse specific data like `telephone` or `email`  
+#### Extractor
+`_t: "extractorName"` allows you to parse specific data like `telephone` or `email`  
 `|` inside the selector `_s` allows you to do it inline
 
 It currently supports `email` (also `mail`), `telephone` (also `phone`) and `html` (to get the inner html) and by default (no declaration), we get the `inner text`.
