@@ -61,10 +61,7 @@ jsonframe($); // initializing the plugin
 
 let frame = {
 	"title": "h1", // this is an inline selector
-	"email": {
-		_s: "span[itemprop=email]", // _s or _selector works
-		_t: "email" // _t or _type works
-	}
+	"email": "span[itemprop=email] |email" // output an extracted email
 }
 
 console.log( JSON.stringify( $('body').scrape(frame) ,null,2) );
