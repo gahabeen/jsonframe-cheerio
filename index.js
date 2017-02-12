@@ -2,23 +2,21 @@
 
 const _ = require('lodash')
 
-var cleanEntry = function (text) {
-	return text.replace(/\s+/gm, " ").trim()
-}
 
 var getTheRightData = function (node, {
 	attr = null,
 	extractor = null,
-	parse = null
+	filter = null,
+	parser = null
 } = {}) {
 
 	var result = null
 	if (!attr && extractor === "html") {
-		result = cleanEntry(parseData(node.html(), parse))
+		result = parseData(filterData(node.html(),filter), parser)
 	} else if (!attr) {
-		result = cleanEntry(parseData(extractByExtractor(node.text(), extractor), parse))
+		result = parseData(filterData(extractByExtractor(node.text(), extractor), filter), parser)
 	} else {
-		result = cleanEntry(parseData(extractByExtractor(node.attr(attr), extractor), parse))
+		result = parseData(filterData(extractByExtractor(node.attr(attr), extractor), filter), parser)
 	}
 
 	return result
@@ -41,7 +39,18 @@ var parseData = function (data, regex) {
 	return result
 }
 
-var filter
+var filterData = function(data, filter) {
+	var result = data
+	if (filter === "raw") {
+		// let the raw data
+	} else if (filter === "trim"){
+		result = result.trim()
+	} else {
+		// Default trim and set one spaces
+		result = result.replace(/\s+/gm, " ").trim()
+	}
+	return result
+}
 
 var extractByExtractor = function (data, extractor) {
 	var result = data
@@ -63,7 +72,7 @@ var getPropertyFromObj = function (obj, propertyName) {
 		'filter': ['filter', '_filter', '_f'],
 		'extractor': ['extractor', '_e', 'type', '_t'], //keep temporary old types
 		'data': ['data', '_d', '_data'],
-		'parser': ['parse', '_parse', '_p'],
+		'parserr': ['parser', '_parser', '_p'],
 		'group': ['_g', '_group']
 	}
 	var ob = this
@@ -91,7 +100,7 @@ var timeSpent = function (lastTime) {
 	return new Date().getTime() - lastTime
 }
 
-String.protoextractor.oneSplitFromEnd = function (char) {
+String.prototype.oneSplitFromEnd = function (char) {
 	var arr = this.split(char),
 		res = []
 
@@ -106,21 +115,18 @@ var extractSmartSelector = function ({
 	attribute = null,
 	filter = null,
 	extractor = null,
-	parse = null
+	parser = null
 }) {
 	var res = {
 		"selector": selector,
 		"attribute": attribute,
 		"filter": filter,
 		"extractor": extractor,
-		"parse": parse
+		"parser": parser
 	}
 
-	// console.log("Selector Working on: ", selector)
-	// console.log("Entry :", JSON.stringify(res, null, 2))
-
 	if (res.selector.includes('||')) {
-		res.parse = res.selector.oneSplitFromEnd('||')[1].trim()
+		res.parser = res.selector.oneSplitFromEnd('||')[1].trim()
 		res.selector = res.selector.oneSplitFromEnd('||')[0].trim()
 	}
 
@@ -139,15 +145,13 @@ var extractSmartSelector = function ({
 		res.selector = res.selector.oneSplitFromEnd('@')[0].trim()
 	}
 
-	// console.log("Result :", JSON.stringify(res, null, 2))
-
 	return res
 }
 
 module.exports = function ($) {
 
-	// real protoextractor
-	$.protoextractor.scrape = function (frame, {
+	// real prototype
+	$.prototype.scrape = function (frame, {
 		debug = false,
 		timestats = false
 	} = {}) {
@@ -168,7 +172,7 @@ module.exports = function ($) {
 
 					try {
 
-						var gSelector, gAttribute, gExtractor, gData, gParse, gGroup, gINFO
+						var gSelector, gAttribute, gExtractor, gData, gParser, gGroup, gFilter, gINFO
 
 						if (_.isObject(obj[key]) && !_.isArray(obj[key])) {
 							gSelector = getPropertyFromObj(obj[key], 'selector')
@@ -176,12 +180,12 @@ module.exports = function ($) {
 							gFilter = getPropertyFromObj(obj[key], 'filter')
 							gExtractor = getPropertyFromObj(obj[key], 'extractor')
 							gData = getPropertyFromObj(obj[key], 'data')
-							gParse = getPropertyFromObj(obj[key], 'parser')
+							gParser = getPropertyFromObj(obj[key], 'parserr')
 							gGroup = getPropertyFromObj(obj, 'group')
 							// console.log("gSelector", gSelector);
 							// console.log("gData", gData);
 
-							// console.log("gParse", gParse);
+							// console.log("gParser", gParser);
 
 
 							if (gSelector && gData && _.isObject(gGroup)) {
@@ -196,7 +200,8 @@ module.exports = function ($) {
 								})
 
 								gSelector = gINFO.selector
-								gParse = gParse ? gParse : gINFO.parse
+								gParser = gParser ? gParser : gINFO.parser
+								gFilter = gFilter ? gFilter : gINFO.parser
 								gAttribute = gAttribute ? gAttribute : gINFO.attribute
 								gExtractor = gExtractor ? gExtractor : gINFO.extractor
 
@@ -226,8 +231,9 @@ module.exports = function ($) {
 												n.each(function (i, n) {
 													elem[key]['_value'][i] = getTheRightData($(n), {
 														extractor: gExtractor,
+														filter: gFilter,
 														attr: gAttribute,
-														parse: gParse
+														parser: gParser
 													})
 												});
 												elem[key]['_timestat'] = timeSpent(gTime)
@@ -235,8 +241,9 @@ module.exports = function ($) {
 												n.each(function (i, n) {
 													elem[key][i] = getTheRightData($(n), {
 														extractor: gExtractor,
+														filter: gFilter,
 														attr: gAttribute,
-														parse: gParse
+														parser: gParser
 													})
 												});
 											}
@@ -269,15 +276,17 @@ module.exports = function ($) {
 											elem[key] = {}
 											elem[key]['_value'] = getTheRightData($(n), {
 												extractor: gExtractor,
+												filter: gFilter,
 												attr: gAttribute,
-												parse: gParse
+												parser: gParser
 											});
 											elem[key]['_timestat'] = timeSpent(gTime)
 										} else {
 											elem[key] = getTheRightData($(n), {
 												extractor: gExtractor,
+												filter: gFilter,
 												attr: gAttribute,
-												parse: gParse
+												parser: gParser
 											});
 										}
 
@@ -299,8 +308,10 @@ module.exports = function ($) {
 								gINFO = extractSmartSelector({
 									selector: obj[key][0]
 								})
+
 								gSelector = gINFO.selector
-								gParse = gParse ? gParse : gINFO.parse
+								gParser = gParser ? gParser : gINFO.parser
+								gFilter = gFilter ? gFilter : gINFO.parser
 								gAttribute = gAttribute ? gAttribute : gINFO.attribute
 								gExtractor = gExtractor ? gExtractor : gINFO.extractor
 
@@ -313,8 +324,9 @@ module.exports = function ($) {
 									n.each(function (i, n) {
 										elem[key]['_value'][i] = getTheRightData($(n), {
 											extractor: gExtractor,
+											filter: gFilter,
 											attr: gAttribute,
-											parse: gParse
+											parser: gParser
 										})
 									});
 									elem[key]['_timestat'] = timeSpent(gTime)
@@ -322,8 +334,9 @@ module.exports = function ($) {
 									n.each(function (i, n) {
 										elem[key][i] = getTheRightData($(n), {
 											extractor: gExtractor,
+											filter: gFilter,
 											attr: gAttribute,
-											parse: gParse
+											parser: gParser
 										})
 									});
 								}
@@ -336,8 +349,10 @@ module.exports = function ($) {
 							gINFO = extractSmartSelector({
 								selector: obj[key]
 							})
+
 							gSelector = gINFO.selector
-							gParse = gParse ? gParse : gINFO.parse
+							gParser = gParser ? gParser : gINFO.parser
+							gFilter = gFilter ? gFilter : gINFO.parser
 							gAttribute = gAttribute ? gAttribute : gINFO.attribute
 							gExtractor = gExtractor ? gExtractor : gINFO.extractor
 
@@ -353,15 +368,17 @@ module.exports = function ($) {
 									elem[key] = {}
 									elem[key]['_value'] = getTheRightData(n, {
 										extractor: gExtractor,
+										filter: gFilter,
 										attr: gAttribute,
-										parse: gParse
+										parser: gParser
 									})
 									elem[key]['_timestat'] = timeSpent(gTime)
 								} else {
 									elem[key] = getTheRightData(n, {
 										extractor: gExtractor,
+										filter: gFilter,
 										attr: gAttribute,
-										parse: gParse
+										parser: gParser
 									})
 								}
 
