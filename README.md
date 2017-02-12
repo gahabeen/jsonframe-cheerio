@@ -26,6 +26,12 @@
 
 ## History
 
+12/02/2017: 1.1.3
+- Adding inline parameters support for `"attribute"`, `"type"` and `"parse"`
+- Adding simple string arrays from inline selector
+- Adding group property to group data selectors whitout naming the group (childs take the place of the group property `"_g"` or `"_group"` )
+
+
 05/02/2017: 1.1.1  
 - Adding short & functionnal parameters ( `_s`, `_t`, `_a`) instead of `"selector"`, `"type"`, `"attr"`. Idea behind being to easily differentiate **retrieved data name** to **functionnal data**.
 - Adding an automatic handler for `img` selected element (automatically retrieve the img src link)
@@ -325,6 +331,32 @@ console.log(JSON.stringify( result , null, 2 ))
 		"pricingNames": ["Hacker", "Pro"]	
 	}
 */
+```
+#### Grouped
+`"_g": { _s: "", _d: {} }` allows you to group some data selectors by a parent selector without naming the parent
+
+```js
+...
+var frame = { 
+	_g: {
+		_s: "#pricing .item",
+		_d: {
+			"name": ".planName",
+			"price": ".planPrice"
+		}
+	}	
+}
+
+var result = $('body').scrape(frame)
+console.log(JSON.stringify( result , null, 2 ))
+
+/* output =>
+	{ 
+		"name": "Hacker",
+		"price": "Free"
+	}
+*/
+...
 ```
 
 #### Nested
