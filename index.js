@@ -25,9 +25,15 @@ var getTheRightData = function (node, {
 	if (extractor && extractor !== "html") {
 		result = extractByExtractor(result, extractor)
 	}
-	if (filter) {
+
+	if(_.isObject(result)){
+		_.forOwn(result, function(value, key){
+			result[key] = filterData(result[key], filter)
+		})
+	} else {
 		result = filterData(result, filter)
 	}
+
 	if (parser) {
 		result = parseData(result, parser)
 	}
@@ -66,7 +72,7 @@ var filterData = function (data, filter) {
 		result = _.startCase(result)
 	} else if (["numbers"].includes(filter)) {
 		result = result.replace(/\D/g, "")
-	} else if (result) {
+	} else{
 		// Default trim and set one spaces
 		result = result.replace(/\s+/gm, " ").trim()
 	}
@@ -75,9 +81,15 @@ var filterData = function (data, filter) {
 
 var extractByExtractor = function (data, extractor, plural = false) {
 	var result = data
-	var emailRegex = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi
+	var emailRegex = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gmi
+	var phoneRegex = /\+?\(?\d*\)? ?\(?\d+\)?\d*([\s./-]\d{2,})+/gmi
 
-	if (extractor.includes("phone")) {
+	if (["phone", "telephone"].includes(extractor)) {
+		if (plural) {
+			result = data.match(phoneRegex) || data
+		} else {
+			result = data.match(phoneRegex) !== null ? data.match(phoneRegex)[0] : data
+		}
 		// let countryCode = result.match(/([A-Z])+/)[0]
 		// console.log("countryCode", countryCode);
 		// if (countryCode) {
@@ -91,7 +103,7 @@ var extractByExtractor = function (data, extractor, plural = false) {
 		if (plural) {
 			result = data.match(emailRegex) || data
 		} else {
-			result = data.match(emailRegex)[0] || data
+			result = data.match(emailRegex) !== null ? data.match(emailRegex)[0] : data
 		}
 	} else if (["date", "d"].includes(extractor)) {
 		result = chrono.casual.parseDate(data).toString()
