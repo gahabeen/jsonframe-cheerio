@@ -3,6 +3,7 @@
 const _ = require('lodash')
 const chrono = require('chrono-node')
 const humanname = require('humanname')
+const phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance()
 
 var getTheRightData = function (node, {
 	attr = null,
@@ -13,29 +14,23 @@ var getTheRightData = function (node, {
 
 	var result = null
 
-	if(attr) {
+	if (attr) {
 		result = node.attr(attr)
-	} else if (extractor === "html"){
+	} else if (extractor === "html") {
 		result = node.html()
 	} else {
 		result = node.text()
 	}
 
-	console.log("filter", filter);
-
-	if(extractor && extractor !== "html"){ result = extractByExtractor(result, extractor) }
-	if(filter){ result = filterData(result, filter) }
-	if(parser){ result = parseData(result, parser) }
-
-	// if (!attr && extractor === "html") {
-	// 	result = parseData(filterData(node.html(),filter), parser)
-	// } else if (!attr && extractor){
-	// 	result = extractByExtractor(node.text(), extractor)
-	// } else if (!attr) {
-	// 	result = parseData(filterData(extractByExtractor(node.text(), extractor), filter), parser)
-	// } else {
-	// 	result = parseData(filterData(node.attr(attr), filter), parser)
-	// }
+	if (extractor && extractor !== "html") {
+		result = extractByExtractor(result, extractor)
+	}
+	if (filter) {
+		result = filterData(result, filter)
+	}
+	if (parser) {
+		result = parseData(result, parser)
+	}
 
 	return result
 }
@@ -57,48 +52,62 @@ var parseData = function (data, regex) {
 	return result
 }
 
-var filterData = function(data, filter) {
+var filterData = function (data, filter) {
 	var result = data
 	if (["raw"].includes(filter)) {
 		// let the raw data
-	} else if (["trim"].includes(filter)){
+	} else if (["trim"].includes(filter)) {
 		result = result.trim()
-	} else if (["lowercase", "lcase"].includes(filter)){
+	} else if (["lowercase", "lcase"].includes(filter)) {
 		result = result.toLowerCase()
-	} else if (["uppercase", "ucase"].includes(filter)){
+	} else if (["uppercase", "ucase"].includes(filter)) {
 		result = result.toUpperCase()
-	} else if (["capitalize", "cap"].includes(filter)){
+	} else if (["capitalize", "cap"].includes(filter)) {
 		result = _.startCase(result)
-	} else if(result) {
+	} else if (["numbers"].includes(filter)) {
+		result = result.replace(/\D/g, "")
+	} else if (result) {
 		// Default trim and set one spaces
 		result = result.replace(/\s+/gm, " ").trim()
 	}
 	return result
 }
 
-var extractByExtractor = function (data, extractor) {
+var extractByExtractor = function (data, extractor, plural = false) {
 	var result = data
 	var emailRegex = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi
 
-	if (["telephone", "phone"].includes(extractor)) {
-		result = data.replace(/\D/g, "") || data
+	if (extractor.includes("phone")) {
+		// let countryCode = result.match(/([A-Z])+/)[0]
+		// console.log("countryCode", countryCode);
+		// if (countryCode) {
+		// 	try {
+		// 		result = phoneUtil.parse(result, "US") // with option, the country code number
+		// 	} catch (e) {
+		// 		//
+		// 	}
+		// }
 	} else if (["email", "mail", "@"].includes(extractor)) {
-		result = data.match(emailRegex)[0] || data
-	} else if (["date", "d"].includes(extractor)){
+		if (plural) {
+			result = data.match(emailRegex) || data
+		} else {
+			result = data.match(emailRegex)[0] || data
+		}
+	} else if (["date", "d"].includes(extractor)) {
 		result = chrono.casual.parseDate(data).toString()
-	} else if (["fullName", "firstName", "lastName", "initials", "suffix", "salutation"].includes(extractor)){
+	} else if (["fullName", "firstName", "lastName", "initials", "suffix", "salutation"].includes(extractor)) {
 		result = humanname.parse(data)
-		if("fullName".includes(extractor)){
-			 // return the object
-		} else if("firstName".includes(extractor)){
+		if ("fullName".includes(extractor)) {
+			// return the object
+		} else if ("firstName".includes(extractor)) {
 			result = result.firstName
-		} else if("lastName".includes(extractor)){
+		} else if ("lastName".includes(extractor)) {
 			result = result.lastName
-		} else if("initials".includes(extractor)){
+		} else if ("initials".includes(extractor)) {
 			result = result.initials
-		} else if("suffix".includes(extractor)){
+		} else if ("suffix".includes(extractor)) {
 			result = result.suffix
-		} else if("salutation".includes(extractor)){
+		} else if ("salutation".includes(extractor)) {
 			result = result.salutation
 		}
 	}
