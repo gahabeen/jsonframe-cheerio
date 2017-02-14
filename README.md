@@ -17,7 +17,7 @@
 ****
 
 ⚠ Careful if you've been using **jsonframe** from the **version 1.x.x**, some things changed to make it more **flexible**, **faster to use (inline parameters)** and **more meaningful in the syntax**.
-[See the changelog](#Changelog)
+[See the changelog](#changelog)
 
 ## **2.0.1** features
 
