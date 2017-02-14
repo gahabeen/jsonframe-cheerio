@@ -241,7 +241,8 @@ module.exports = function ($) {
 	// real prototype
 	$.prototype.scrape = function (frame, {
 		debug = false,
-		timestats = false
+		timestats = false,
+		string = false
 	} = {}) {
 
 		let output = {}
@@ -487,6 +488,10 @@ module.exports = function ($) {
 		}
 
 		iterateThrough(frame, output, mainNode)
+
+		if(string) {
+			output = JSON.stringify(output, null, 2)
+		}
 
 		return output
 	};
