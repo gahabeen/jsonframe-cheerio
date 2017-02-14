@@ -1,10 +1,10 @@
-const expect = require('expect');
-const cheerio = require('cheerio');
-var _ = require('lodash');
+const expect = require('expect')
+const cheerio = require('cheerio')
+let _ = require('lodash')
 
-var jsonframe = require('./../index.js');
+let jsonframe = require('./../index.js')
 
-var html = `
+let html = `
 <html>
 <head></head>
 <body>
@@ -32,11 +32,11 @@ var html = `
 	</div>
 </body>
 </html>
-`;
+`
 
-var $ = cheerio.load(html);
+let $ = cheerio.load(html)
 
-jsonframe($);
+jsonframe($)
 
 describe('JsonFrame Tests', () => {
 
@@ -44,34 +44,34 @@ describe('JsonFrame Tests', () => {
 
 		it('should get simple text', () => {
 
-			var frame = {
+			let frame = {
 				"title": "h2"
-			};
+			}
 
-			var output = $('body').scrape(frame);
+			let output = $('body').scrape(frame)
 
 			expect(output)
 				.toContain({
 					"title": "Pricing"
-				});
+				})
 
-		});
+		})
 
-		
+
 		it('should get img src automatically', () => {
 
-			var frame = {
+			let frame = {
 				"picture": ".picture" // even without mentionning the img tag
-			};
+			}
 
-			var output = $('body').scrape(frame);
+			let output = $('body').scrape(frame)
 
 			expect(output)
 				.toContain({
 					"picture": "somepath/to/image.png"
-				});
+				})
 
-		});
+		})
 
 	})
 
@@ -79,131 +79,225 @@ describe('JsonFrame Tests', () => {
 
 		it('should get the price attribute value', () => {
 
-			var frame = {
+			let frame = {
 				"proPrice": {
 					_s: ".planName:contains('Pro') + span",
 					_a: "price"
 				}
-			};
+			}
 
-			var output = $('body').scrape(frame);
+			let output = $('body').scrape(frame)
 
 			expect(output)
 				.toContain({
 					"proPrice": "39.00"
-				});
+				})
 
-		});
+		})
+
+		it('should get the price attribute value (inline)', () => {
+
+			let frame = {
+				"proPrice": ".planName:contains('Pro') + span @ price"
+			}
+
+			let output = $('body').scrape(frame)
+
+			expect(output)
+				.toContain({
+					"proPrice": "39.00"
+				})
+
+		})
 
 		it('should get the link (href) attribute value', () => {
 
-			var frame = {
+			let frame = {
 				"link": {
 					_s: ".mainLink",
 					_a: "href"
 				}
-			};
+			}
 
-			var output = $('body').scrape(frame);
+			let output = $('body').scrape(frame)
 
 			expect(output)
 				.toContain({
 					"link": "some/url/to/somewhere"
-				});
+				})
 
-		});
+		})
+
+		it('should get the link (href) attribute value', () => {
+
+			let frame = {
+				"link": ".mainLink @ href"
+			}
+
+			let output = $('body').scrape(frame)
+
+			expect(output)
+				.toContain({
+					"link": "some/url/to/somewhere"
+				})
+
+		})
 
 	})
 
-	
+
 	describe('Get Data with Type {selector, type[, attribute,]}', () => {
 
 		it('should get the USA telephone value', () => {
-			var frame = {
+			let frame = {
 				"telephone": {
 					_s: "[itemprop=usaphone]",
 					_t: "telephone"
 				}
-			};
+			}
 
-			var output = $('body').scrape(frame);
+			let output = $('body').scrape(frame)
 
 			expect(output)
 				.toContain({
-					"telephone": "912148456"
-				});
-		});
+					"telephone": "(912) 148-456"
+				})
+		})
+
+		it('should get the USA telephone value (inline)', () => {
+			let frame = {
+				"telephone": "[itemprop=usaphone] < telephone"
+			}
+
+			let output = $('body').scrape(frame)
+
+			expect(output)
+				.toContain({
+					"telephone": "(912) 148-456"
+				})
+		})
 
 		it('should get the FR telephone value', () => {
-			var frame = {
+			let frame = {
 				"telephone": {
 					_s: "[itemprop=frphone]",
 					_t: "telephone"
 				}
-			};
+			}
 
-			var output = $('body').scrape(frame);
+			let output = $('body').scrape(frame)
 
 			expect(output)
 				.toContain({
-					"telephone": "33238303790"
-				});
-		});
+					"telephone": "+332 38 30 37 90"
+				})
+		})
+
+		it('should get the FR telephone value (inline)', () => {
+			let frame = {
+				"telephone": "[itemprop=frphone] < telephone"
+			}
+
+			let output = $('body').scrape(frame)
+
+			expect(output)
+				.toContain({
+					"telephone": "+332 38 30 37 90"
+				})
+		})
 
 		it('should get the email value', () => {
-			var frame = {
+			let frame = {
 				"email": {
 					_s: "[itemprop=email]",
 					_t: "email"
 				}
-			};
+			}
 
-			var output = $('body').scrape(frame);
+			let output = $('body').scrape(frame)
 
 			expect(output)
 				.toContain({
 					"email": "lspurcell@suddenlink.net"
-				});
-		});
+				})
+		})
+
+		it('should get the email value (inline)', () => {
+			let frame = {
+				"email": "[itemprop=email] < email"
+			}
+
+			let output = $('body').scrape(frame)
+
+			expect(output)
+				.toContain({
+					"email": "lspurcell@suddenlink.net"
+				})
+		})
 
 		it('should get the inner html value', () => {
-			var frame = {
+			let frame = {
 				"inner": {
 					_s: ".popup",
 					_t: "html"
 				}
-			};
+			}
 
-			var output = $('body').scrape(frame);
+			let output = $('body').scrape(frame)
 
 			expect(output)
 				.toContain({
 					"inner": "<span>Some inner content</span>"
-				});
-		});
-		
+				})
+		})
+
+		it('should get the inner html value (inline)', () => {
+			let frame = {
+				"inner": ".popup < html"
+			}
+
+			let output = $('body').scrape(frame)
+
+			expect(output)
+				.toContain({
+					"inner": "<span>Some inner content</span>"
+				})
+		})
+
 
 	})
 
 	describe('Get Parsed Data thanks to Regex {selector, parse[, type, attribute]}', () => {
 
 		it('should get the parsed date dd/mm/yyyy from regex', () => {
-			
-			var frame = {
+
+			let frame = {
 				"data": {
 					_s: ".date",
 					_p: /\d{1,2}\/\d{1,2}\/\d{2,4}/
 				}
-			};
+			}
 
-			var output = $('body').scrape(frame);
+			let output = $('body').scrape(frame)
 
 			expect(output)
 				.toContain({
 					"data": "04/02/2017"
-				});
+				})
+		})
 
+		it('should get the parsed date dd/mm/yyyy from regex (inline)', () => {
 
+			let frame = {
+				"data": ".date || \\d{1,2}/\\d{1,2}/\\d{2,4}"
+			}
+
+			let output = $('body').scrape(frame)
+
+			expect(output)
+				.toContain({
+					"data": "04/02/2017"
+				})
 		})
 
 	})
@@ -212,7 +306,7 @@ describe('JsonFrame Tests', () => {
 
 		it('should get json object with parent > child', () => {
 
-			var frame = {
+			let frame = {
 				"pricing": {
 					_s: "#pricing .item",
 					_d: {
@@ -220,9 +314,9 @@ describe('JsonFrame Tests', () => {
 						"price": ".planPrice"
 					}
 				}
-			};
+			}
 
-			var output = $('body').scrape(frame);
+			let output = $('body').scrape(frame)
 
 			expect(output)
 				.toContain({
@@ -230,17 +324,17 @@ describe('JsonFrame Tests', () => {
 						"name": "Hacker",
 						"price": "Free"
 					}
-				});
+				})
 
-		});
+		})
 
-	});
+	})
 
 	describe('Get Array / List of Data {selector, data: [{}]}', () => {
 
 		it('should get json object with parent > childs []', () => {
 
-			var frame = {
+			let frame = {
 				"pricing": {
 					_s: "#pricing .item",
 					_d: [{
@@ -248,9 +342,9 @@ describe('JsonFrame Tests', () => {
 						"price": ".planPrice"
 					}]
 				}
-			};
+			}
 
-			var output = $('body').scrape(frame);
+			let output = $('body').scrape(frame)
 
 			expect(output)
 				.toContain({
@@ -263,17 +357,49 @@ describe('JsonFrame Tests', () => {
 							"price": "$39"
 						}
 					]
-				});
+				})
 
-		});
+		})
 
-	});
+	})
+
+	describe('Get child elements grouped by a selector with _g', () => {
+
+		it('should get the data within the first li item', () => {
+			let frame = {
+				_g: {
+					_s: "#pricing .item",
+					_d: {
+						"name": ".planName",
+						"price": ".planPrice @ price",
+						"image": {
+							"url": "img",
+							"link": "a @ href"
+						}
+					}
+				}
+			}
+
+			let output = $('body').scrape(frame)
+
+			expect(output)
+				.toContain({
+					"name": "Hacker",
+					"price": "0",
+					"image": {
+						"url": "./img/hacker.png",
+						"link": "/hacker"
+					}
+				})
+		})
+
+	})
 
 	describe('Full examples', () => {
 
 		it('should get the pricing list + details', () => {
 
-			var frame = {
+			let frame = {
 				"pricing": {
 					_s: "#pricing .item",
 					_d: [{
@@ -294,9 +420,9 @@ describe('JsonFrame Tests', () => {
 						}
 					}]
 				}
-			};
+			}
 
-			var output = $('body').scrape(frame);
+			let output = $('body').scrape(frame)
 
 			expect(output)
 				.toContain({
@@ -317,10 +443,51 @@ describe('JsonFrame Tests', () => {
 							}
 						}
 					]
-				});
+				})
 
-		});
+		})
 
-	});
+		it('should get the pricing list + details (inline)', () => {
 
-});
+			let frame = {
+				"pricing": {
+					_s: "#pricing .item",
+					_d: [{
+						"name": ".planName",
+						"price": ".planPrice @ price",
+						"image": {
+							"url": "img",
+							"link": "a @ href"
+						}
+					}]
+				}
+			}
+
+			let output = $('body').scrape(frame)
+
+			expect(output)
+				.toContain({
+					"pricing": [{
+							"name": "Hacker",
+							"price": "0",
+							"image": {
+								"url": "./img/hacker.png",
+								"link": "/hacker"
+							}
+						},
+						{
+							"name": "Pro",
+							"price": "39.00",
+							"image": {
+								"url": "./img/pro.png",
+								"link": "/pro"
+							}
+						}
+					]
+				})
+
+		})
+
+	})
+
+})

@@ -16,7 +16,10 @@
 
 ****
 
-## **2.0.0** features
+⚠ Careful if you've been using **jsonframe** from the **version 1.x.x**, some things changed to make it more **flexible**, **faster to use (inline parameters)** and **more meaningful in the syntax**.
+[See the changelog](#Changelog)
+
+## **2.0.1** features
 
 😍 **JSON Syntax**: input json, output the same structured json including with scraped data
 
@@ -439,6 +442,10 @@ npm run test-watch
 
 
 ## Changelog
+
+**2.0.1** (14/02/2017)
+- Fixed the non-passing tests and added all the new ones for 2.x.x updates
+- Refactoring the way data is processed for future multiple occurences
 
 **2.0.0** (12/02/2017)
 - ⚠ Changing  ~~`Type`~~ for `Extractor` with shortcode `<` instead of `|`
