@@ -5,47 +5,12 @@ const chrono = require('chrono-node')
 const humanname = require('humanname')
 const phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance()
 
-var getTheRightData = function (node, {
-	attr = null,
-	extractor = null,
-	filter = null,
-	parser = null
-} = {}) {
 
-	var result = null
-
-	if (attr) {
-		result = node.attr(attr)
-	} else if (extractor === "html") {
-		result = node.html()
-	} else {
-		result = node.text()
-	}
-
-	if (extractor && extractor !== "html") {
-		result = extractByExtractor(result, extractor)
-	}
-
-	if(_.isObject(result)){
-		_.forOwn(result, function(value, key){
-			result[key] = filterData(result[key], filter)
-		})
-	} else {
-		result = filterData(result, filter)
-	}
-
-	if (parser) {
-		result = parseData(result, parser)
-	}
-
-	return result
-}
-
-var parseData = function (data, regex) {
-	var result = data
+let parseData = function (data, regex) {
+	let result = data
 	if (regex) {
 		try {
-			var rgx = regex
+			let rgx = regex
 			if (_.isString(regex)) {
 				rgx = new RegExp(regex, 'gim')
 			}
@@ -58,8 +23,8 @@ var parseData = function (data, regex) {
 	return result
 }
 
-var filterData = function (data, filter) {
-	var result = data
+let filterData = function (data, filter) {
+	let result = data
 	if (["raw"].includes(filter)) {
 		// let the raw data
 	} else if (["trim"].includes(filter)) {
@@ -72,17 +37,17 @@ var filterData = function (data, filter) {
 		result = _.startCase(result)
 	} else if (["numbers"].includes(filter)) {
 		result = result.replace(/\D/g, "")
-	} else{
+	} else {
 		// Default trim and set one spaces
 		result = result.replace(/\s+/gm, " ").trim()
 	}
 	return result
 }
 
-var extractByExtractor = function (data, extractor, plural = false) {
-	var result = data
-	var emailRegex = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gmi
-	var phoneRegex = /\+?\(?\d*\)? ?\(?\d+\)?\d*([\s./-]\d{2,})+/gmi
+let extractByExtractor = function (data, extractor, plural = false) {
+	let result = data
+	let emailRegex = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gmi
+	let phoneRegex = /\+?\(?\d*\)? ?\(?\d+\)?\d*([\s./-]\d{2,})+/gmi
 
 	if (["phone", "telephone"].includes(extractor)) {
 		if (plural) {
@@ -127,8 +92,8 @@ var extractByExtractor = function (data, extractor, plural = false) {
 	return result
 }
 
-var getPropertyFromObj = function (obj, propertyName) {
-	var properties = {
+let getPropertyFromObj = function (obj, propertyName) {
+	let properties = {
 		'selector': ['selector', '_s', '_selector'],
 		'attribute': ['attr', 'attribute', '_attr', '_a'],
 		'filter': ['filter', '_filter', '_f'],
@@ -137,8 +102,8 @@ var getPropertyFromObj = function (obj, propertyName) {
 		'parserr': ['parser', '_parser', '_p'],
 		'group': ['_g', '_group']
 	}
-	var ob = this
-	var res = null
+	let ob = this
+	let res = null
 	if (properties[propertyName]) {
 		properties[propertyName].forEach(function (property, i) {
 			if (obj[property]) {
@@ -150,7 +115,7 @@ var getPropertyFromObj = function (obj, propertyName) {
 	return res
 }
 
-var getNodeFromSmartSelector = function (node, selector) {
+let getNodeFromSmartSelector = function (node, selector) {
 	if (selector === "_parent_") {
 		return node
 	} else {
@@ -158,12 +123,12 @@ var getNodeFromSmartSelector = function (node, selector) {
 	}
 }
 
-var timeSpent = function (lastTime) {
+let timeSpent = function (lastTime) {
 	return new Date().getTime() - lastTime
 }
 
 String.prototype.oneSplitFromEnd = function (char) {
-	var arr = this.split(char),
+	let arr = this.split(char),
 		res = []
 
 	res[1] = arr[arr.length - 1]
@@ -172,14 +137,14 @@ String.prototype.oneSplitFromEnd = function (char) {
 	return res
 }
 
-var extractSmartSelector = function ({
+let extractSmartSelector = function ({
 	selector,
 	attribute = null,
 	filter = null,
 	extractor = null,
 	parser = null
 }) {
-	var res = {
+	let res = {
 		"selector": selector,
 		"attribute": attribute,
 		"filter": filter,
@@ -212,14 +177,75 @@ var extractSmartSelector = function ({
 
 module.exports = function ($) {
 
+	let getTheRightData = function (node, {
+		attr = null,
+		extractor = null,
+		filter = null,
+		parser = null,
+		multiple = false
+	} = {}) {
+
+		let results = []
+		let localNodes = []
+
+		for (var index = 0; index < node.length; index++) {
+			localNodes.push(node[index])
+		}
+
+		if (multiple && localNodes.length > 1) {
+			// Do a looop and stuff
+		} else if (localNodes.length > 1) {
+			// reset to the only first child
+			let tempNode = localNodes[0]
+			localNodes = []
+			localNodes.push(tempNode)
+		}
+
+		localNodes.forEach(function (localNode, index) {
+
+			if (attr) {
+				results[index] = $(localNode).attr(attr)
+			} else if (extractor === "html") {
+				results[index] = $(localNode).html()
+			} else {
+				results[index] = $(localNode).text()
+			}
+
+			if (extractor && extractor !== "html") {
+				results[index] = extractByExtractor(results[index], extractor)
+			}
+
+			if (_.isObject(results[index])) {
+				_.forOwn(results[index], function (value, key) {
+					results[index][key] = filterData(results[index][key], filter)
+				})
+			} else {
+				results[index] = filterData(results[index], filter)
+			}
+
+			if (parser) {
+				results[index] = parseData(results[index], parser)
+			}
+
+		})
+
+		if (!multiple) {
+			return results[0]
+		} else {
+			return results
+		}
+
+	}
+
+
 	// real prototype
 	$.prototype.scrape = function (frame, {
 		debug = false,
 		timestats = false
 	} = {}) {
 
-		var output = {}
-		var mainNode = $(this)
+		let output = {}
+		let mainNode = $(this)
 
 		let iterateThrough = function (obj, elem, node) {
 
@@ -234,7 +260,7 @@ module.exports = function ($) {
 
 					try {
 
-						var gSelector, gAttribute, gExtractor, gData, gParser, gGroup, gFilter, gINFO
+						let gSelector, gAttribute, gExtractor, gData, gParser, gGroup, gFilter, gINFO
 
 						if (_.isObject(obj[key]) && !_.isArray(obj[key])) {
 							gSelector = getPropertyFromObj(obj[key], 'selector')
@@ -252,7 +278,7 @@ module.exports = function ($) {
 
 							if (gSelector && gData && _.isObject(gGroup)) {
 
-								var n = getNodeFromSmartSelector($(node), gSelector)
+								let n = getNodeFromSmartSelector($(node), gSelector)
 								iterateThrough(gData, elem, $(n))
 
 							} else if (gSelector && _.isString(gSelector)) {
@@ -285,7 +311,7 @@ module.exports = function ($) {
 										} else if (_.isString(gData[0])) {
 											elem[key] = []
 
-											var n = getNodeFromSmartSelector($(node), gSelector)
+											let n = getNodeFromSmartSelector($(node), gSelector)
 
 											if (timestats) {
 												elem[key] = {}
@@ -318,7 +344,7 @@ module.exports = function ($) {
 
 										if (_.size(gData) > 0) {
 											elem[key] = {};
-											var n = $(node).find(gSelector).first();
+											let n = $(node).find(gSelector).first();
 											iterateThrough(gData, elem[key], $(n));
 										}
 
@@ -326,7 +352,7 @@ module.exports = function ($) {
 
 								} else {
 
-									var n = getNodeFromSmartSelector($(node), gSelector)
+									let n = getNodeFromSmartSelector($(node), gSelector)
 
 									if (n.length > 0) {
 
@@ -378,7 +404,7 @@ module.exports = function ($) {
 								gExtractor = gExtractor ? gExtractor : gINFO.extractor
 
 								elem[key] = []
-								var n = getNodeFromSmartSelector($(node), gSelector)
+								let n = getNodeFromSmartSelector($(node), gSelector)
 
 								if (timestats) {
 									elem[key] = {}
@@ -418,8 +444,8 @@ module.exports = function ($) {
 							gAttribute = gAttribute ? gAttribute : gINFO.attribute
 							gExtractor = gExtractor ? gExtractor : gINFO.extractor
 
-							var n = getNodeFromSmartSelector($(node), gSelector)
-							// console.log(object);
+							let n = getNodeFromSmartSelector($(node), gSelector)
+
 							if (n.length > 0) {
 
 								if (!gAttribute && n.get(0).tagName === "img") {
