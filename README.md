@@ -17,7 +17,7 @@
 ⚠ Careful if you've been using **jsonframe** from the **version 1.x.x**, some things changed to make it more **flexible**, **faster to use (inline parameters)** and **more meaningful in the syntax**.
 [See the changelog](#changelog)
 
-## **2.0.1** features
+## **2.0.2** features
 
 😍 **JSON Syntax**: input json, output the same structured json including with scraped data
 
@@ -34,17 +34,17 @@ let $ = cheerio.load(`
 	<body>
 		<h1>I love jsonframe!</h1>
 		<span itemprop="email"> Email: gabin@datascraper.pro  </span>
-	<body>`);
+	<body>`)
 
-let jsonframe = require('jsonframe-cheerio');
-jsonframe($); // initializing the plugin
+let jsonframe = require('jsonframe-cheerio')
+jsonframe($) // initializing the plugin
 
 let frame = {
 	"title": "h1", // this is an inline selector
 	"email": "span[itemprop=email] < email" // output an extracted email
 }
 
-console.log( JSON.stringify( $('body').scrape(frame) ,null,2) );
+console.log( $('body').scrape(frame, { string: true } ))
 /*=> 
 {
 	"title": "I love jsonframe!",
@@ -68,14 +68,14 @@ Start by `loading Cheerio`.
 
 ```js
 let cheerio = require('cheerio')
-let $ = cheerio.load("HTML DOM to load"); // See Cheerio API
+let $ = cheerio.load("HTML DOM to load") // See Cheerio API
 ```
 
 Then `load the jsonframe plugin`.
 
 ```js
-let jsonframe = require('jsonframe-cheerio'); // require from npm package
-jsonframe($); // apply the plugin to the current Cheerio instance
+let jsonframe = require('jsonframe-cheerio') // require from npm package
+jsonframe($) // apply the plugin to the current Cheerio instance
 ```
 
 ### Scraper 
@@ -125,14 +125,14 @@ Let's take the following `HTML example`:
 ```js
 let frame = {
 	"title": "h2" // CSS selector
-};
+}
 ```
 
 We then pass the frame to the function:
 
 ```js
-let result = $('body').scrape(frame);
-console.log(JSON.stringify( result , null, 2 ))
+let result = $('body').scrape(frame, { string: true })
+console.log( result )
 //=> {"title": "Pricing"}
 ```
 
@@ -145,8 +145,8 @@ Most common selector, `inline line` by specifying nothing more than the data nam
 ...
 let frame = { "title": "h2" }
 
-let result = $('body').scrape(frame)
-console.log(JSON.stringify( result , null, 2 ))
+let result = $('body').scrape(frame, { string: true })
+console.log( result )
 
 /* output =>
 	{ "title": "Pricing" }
@@ -169,8 +169,8 @@ let frame = {
 	"proPrice": ".planName:contains('Pro') + span@price"
 }
 
-let result = $('body').scrape(frame)
-console.log(JSON.stringify( result , null, 2 ))
+let result = $('body').scrape(frame, { string: true })
+console.log( result )
 
 /* output =>
 	{ "proPrice": "39.00" }
@@ -191,8 +191,8 @@ let frame = {
 	"frphone": "[itemprop=frphone] < phone"
 }
 
-let result = $('body').scrape(frame)
-console.log(JSON.stringify( result , null, 2 ))
+let result = $('body').scrape(frame, { string: true })
+console.log( result )
 
 /* output =>
 	{ 
@@ -223,8 +223,8 @@ let frame = {
 	}
 }
 
-let result = $('body').scrape(frame)
-console.log(JSON.stringify( result , null, 2 ))
+let result = $('body').scrape(frame, { string: true })
+console.log( result )
 
 /* output =>
 	{ 
@@ -236,7 +236,8 @@ console.log(JSON.stringify( result , null, 2 ))
 
 #### List / Array
 `_d: [{ }]` allows you to get an `array / list of data`  
-`_d: ["_parent_"]` will retrieves a list based on the parent selector  
+`_d: ["selector"]` will retrieves a list based on the selector inbetween quotes.  
+`_d: ["firstSelector", "secondSelector"]` works too and merge the results into one array
 
 You could even shorten it more by listing right from the selector as follows: 
 `"selectorName": [".selector"]` which returns an array of strings
@@ -253,8 +254,8 @@ let frame = {
 	}	
 }
 
-let result = $('body').scrape(frame)
-console.log(JSON.stringify( result , null, 2 ))
+let result = $('body').scrape(frame, { string: true })
+console.log( result )
 
 /* output =>
 	{ 
@@ -277,8 +278,8 @@ let frame = {
 	"pricingNames": ["#pricing .item .planName"]
 }
 
-let result = $('body').scrape(frame)
-console.log(JSON.stringify( result , null, 2 ))
+let result = $('body').scrape(frame, { string: true })
+console.log( result )
 
 /* output =>
 	{ 
@@ -288,7 +289,9 @@ console.log(JSON.stringify( result , null, 2 ))
 ...
 ```
 #### Grouped
-`"_g": { _s: "", _d: {} }` allows you to group some data selectors by a parent selector without naming the parent
+`"_g": { _s: "", _d: {} }` allows you to group some data selectors by a parent selector without naming the parent. You can also extends the group property to add some meaning or simply have several groups at the same level.  
+Group property name must be `_g` or `_group` followed by `_` and whatever string you want.  
+ex: `_g_head : {}` or `_g_body : {}`
 
 ```js
 ...
@@ -299,20 +302,30 @@ let frame = {
 			"name": ".planName",
 			"price": ".planPrice"
 		}
+	},
+	_g_second: {
+		_s: "#pricing .item",
+		_d: {
+			"secondName": ".planName",
+			"secondPrice": ".planPrice"
+		}
 	}	
 }
 
-let result = $('body').scrape(frame)
-console.log(JSON.stringify( result , null, 2 ))
+let result = $('body').scrape(frame, { string: true })
+console.log( result )
 
 /* output =>
 	{ 
 		"name": "Hacker",
-		"price": "Free"
+		"price": "Free",
+		"secondName": "Hacker",
+		"secondPrice": "Free"
 	}
 */
 ...
 ```
+
 
 #### Nested
 `"parent": { _s: "parentSelector", _d: {} }` allows you to segment your data by `setting a parent section` from which the child data will be scraped.  
@@ -331,8 +344,8 @@ let frame = {
 	}	
 }
 
-let result = $('body').scrape(frame)
-console.log(JSON.stringify( result , null, 2 ))
+let result = $('body').scrape(frame, { string: true })
+console.log( result )
 
 /* output =>
 	{ 
@@ -366,8 +379,8 @@ let frame = {
 	}	
 }
 
-let result = $('body').scrape(frame)
-console.log(JSON.stringify( result , null, 2 ))
+let result = $('body').scrape(frame, { string: true })
+console.log( result )
 
 /* output =>
 	{ 
@@ -399,9 +412,6 @@ console.log(JSON.stringify( result , null, 2 ))
 
 ### Options
 
-#### { timestats: true } (_default: false_)  
-Measure time spent on each node (in milliseconds)
-
 ```js
 ...
 let frame = { 
@@ -409,10 +419,14 @@ let frame = {
 		_s: ".planName:contains('Pro') + span",
 		_a: "price"
 	}	
-};
+}
 
-let result = $('body').scrape(frame, {timestats: true})
-console.log(JSON.stringify( result , null, 2 ))
+let result = $('body')
+	.scrape(frame, {
+			timestats: true, // default: false
+			string: true // default: false
+		})
+console.log(result)
 
 /* output =>
 	{ 
@@ -441,24 +455,30 @@ npm run test-watch
 
 ## Changelog
 
+**2.0.2** (15/02/2017)
+- String option to get a stringified output right away
+- Multi-groups possibility at same level (several _g wouldn't work as same property name) in frame like _g_head and _g_body for example
+- Joined arrays/lists with ["firstlist.selector", "secondlist.selector", "..."] when inline
+- Better handling of img node - automatic src attribute is output (if nothing else set)
+
 **2.0.1** (14/02/2017)
 - Fixed the non-passing tests and added all the new ones for 2.x.x updates
 - Refactoring the way data is processed for future multiple occurences
 
 **2.0.0** (12/02/2017)
 - ⚠ Changing  ~~`Type`~~ for `Extractor` with shortcode `<` instead of `|`
-- ⚠ Adding `filters` with the shortcode `|`
-- Adding inline parameters support for `"attribute"`, `"extractor"` and `"parse"`
-- Adding simple string arrays from inline selector
-- Adding group property to group data selectors whitout naming the group (childs take the place of the group property `"_g"` or `"_group"` )
+- ⚠ `filters` with the shortcode `|`
+- Inline parameters support for `"attribute"`, `"extractor"` and `"parse"`
+- Simple string arrays from inline selector
+- Group property to group data selectors whitout naming the group (childs take the place of the group property `"_g"` or `"_group"` )
 
 
 **1.1.1** (05/02/2017)
-- Adding short & functionnal parameters ( `_s`, `_t`, `_a`) instead of `"selector"`, `"extractor"`, `"attr"`. Idea behind being to easily differentiate **retrieved data name** to **functionnal data**.
-- Adding an automatic handler for `img` selected element (automatically retrieve the img src link)
-- Adding the `_parent_` selector to target the **parent content**
-- Adding a **regex parser** with the functionnal parameter **parse**: `_p` (`_parse` works too)
-- Adding **extractor** `_t: "html"` feature to get back **inner html of a selector**
+- Short & functionnal parameters ( `_s`, `_t`, `_a`) instead of `"selector"`, `"extractor"`, `"attr"`. Idea behind being to easily differentiate **retrieved data name** to **functionnal data**.
+- Automatic handler for `img` selected element (automatically retrieve the img src link)
+- `_parent_` selector to target the **parent content**
+- A **regex parser** with the functionnal parameter **parse**: `_p` (`_parse` works too)
+- **Extractor** `_t: "html"` feature to get back **inner html of a selector**
 - Added **timestats** to measure time spent on each node via `.scrape(frame, {timestats: true})`
 - Refactorization of the whole code to make it evolutive (DRY)
 - Update of the tests cases accordingly
