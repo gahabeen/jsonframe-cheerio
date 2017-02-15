@@ -149,8 +149,11 @@ String.prototype.oneSplitFromEnd = function (char) {
 	return res
 }
 
-let extractSmartSelector = function ({
+module.exports = function ($) {
+
+	let extractSmartSelector = function ({
 	selector,
+	node = null,
 	attribute = null,
 	filter = null,
 	extractor = null,
@@ -184,10 +187,12 @@ let extractSmartSelector = function ({
 		res.selector = res.selector.oneSplitFromEnd('@')[0].trim()
 	}
 
+	if (!res.extractor && !res.attribute && $(node).find(res.selector).get(0).tagName === "img") {
+		res.attribute = "src"
+	}
+
 	return res
 }
-
-module.exports = function ($) {
 
 	let getTheRightData = function (node, {
 		attr = null,
@@ -296,7 +301,8 @@ module.exports = function ($) {
 							if (gSelector && _.isString(gSelector)) {
 
 								gINFO = extractSmartSelector({
-									selector: gSelector
+									selector: gSelector,
+									node: $(node)
 								})
 
 								gSelector = gINFO.selector
@@ -368,10 +374,6 @@ module.exports = function ($) {
 
 									if (n.length > 0) {
 
-										if (!gAttribute && n.get(0).tagName === "img") {
-											gAttribute = "src"
-										}
-
 										if (timestats) {
 											elem[key] = {}
 											elem[key]['_value'] = getTheRightData($(n), {
@@ -408,7 +410,8 @@ module.exports = function ($) {
 								if (_.isString(arrSelector)) {
 
 									gINFO = extractSmartSelector({
-										selector: arrSelector
+										selector: arrSelector,
+										node: $(node)
 									})
 
 									gSelector = gINFO.selector
@@ -451,7 +454,8 @@ module.exports = function ($) {
 						else {
 
 							gINFO = extractSmartSelector({
-								selector: obj[key]
+								selector: obj[key],
+								node: $(node)
 							})
 
 							gSelector = gINFO.selector
@@ -463,10 +467,6 @@ module.exports = function ($) {
 							let n = getNodeFromSmartSelector($(node), gSelector)
 
 							if (n.length > 0) {
-
-								if (!gAttribute && n.get(0).tagName === "img") {
-									gAttribute = "src"
-								}
 
 								if (timestats) {
 									elem[key] = {}
