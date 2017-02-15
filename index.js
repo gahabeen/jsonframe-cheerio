@@ -95,8 +95,8 @@ let extractByExtractor = function (data, extractor, plural = false) {
 let isAGroupKey = function (groupKey) {
 	let groupProperties = ['_g', 'group']
 	let isAGroup = false
-	groupProperties.forEach(function(value){
-		if(value === groupKey || groupKey.startsWith(value + '_')){
+	groupProperties.forEach(function (value) {
+		if (value === groupKey || groupKey.startsWith(value + '_')) {
 			isAGroup = true
 			return
 		}
@@ -270,9 +270,9 @@ module.exports = function ($) {
 				if (key === "_frame" || key === "_from") {
 					elem[key] = obj[key]
 
-				// If it's a group key
-				} else if(isAGroupKey(key)) {
-					
+					// If it's a group key
+				} else if (isAGroupKey(key)) {
+
 					let selector = getPropertyFromObj(obj[key], 'selector')
 					let data = getPropertyFromObj(obj[key], 'data')
 					let n = getNodeFromSmartSelector($(node), selector)
@@ -292,9 +292,6 @@ module.exports = function ($) {
 							gExtractor = getPropertyFromObj(obj[key], 'extractor')
 							gData = getPropertyFromObj(obj[key], 'data')
 							gParser = getPropertyFromObj(obj[key], 'parser')
-
-							// console.log("gSelector", gSelector);
-							// console.log("gData", gData);
 
 							if (gSelector && _.isString(gSelector)) {
 
@@ -406,45 +403,49 @@ module.exports = function ($) {
 							}
 						} else if (_.isArray(obj[key])) {
 
-							if (_.isString(obj[key][0])) {
+							elem[key] = []
+							obj[key].forEach(function (arrSelector, h) {
+								if (_.isString(arrSelector)) {
 
-								gINFO = extractSmartSelector({
-									selector: obj[key][0]
-								})
+									gINFO = extractSmartSelector({
+										selector: arrSelector
+									})
 
-								gSelector = gINFO.selector
-								gParser = gParser ? gParser : gINFO.parser
-								gFilter = gFilter ? gFilter : gINFO.filter
-								gAttribute = gAttribute ? gAttribute : gINFO.attribute
-								gExtractor = gExtractor ? gExtractor : gINFO.extractor
+									gSelector = gINFO.selector
+									gParser = gParser ? gParser : gINFO.parser
+									gFilter = gFilter ? gFilter : gINFO.filter
+									gAttribute = gAttribute ? gAttribute : gINFO.attribute
+									gExtractor = gExtractor ? gExtractor : gINFO.extractor
 
-								elem[key] = []
-								let n = getNodeFromSmartSelector($(node), gSelector)
+									let n = getNodeFromSmartSelector($(node), gSelector)
 
-								if (timestats) {
-									elem[key] = {}
-									elem[key]['_value'] = []
-									n.each(function (i, n) {
-										elem[key]['_value'][i] = getTheRightData($(n), {
-											extractor: gExtractor,
-											filter: gFilter,
-											attr: gAttribute,
-											parser: gParser
-										})
-									});
-									elem[key]['_timestat'] = timeSpent(gTime)
-								} else {
-									n.each(function (i, n) {
-										elem[key][i] = getTheRightData($(n), {
-											extractor: gExtractor,
-											filter: gFilter,
-											attr: gAttribute,
-											parser: gParser
-										})
-									});
+									if (timestats) {
+										elem[key] = {}
+										elem[key]['_value'] = []
+										n.each(function (i, n) {
+											elem[key]['_value'].push(getTheRightData($(n), {
+												extractor: gExtractor,
+												filter: gFilter,
+												attr: gAttribute,
+												parser: gParser
+											}))
+										});
+										elem[key]['_timestat'] = timeSpent(gTime)
+									} else {
+										n.each(function (i, n) {
+											elem[key].push(getTheRightData($(n), {
+												extractor: gExtractor,
+												filter: gFilter,
+												attr: gAttribute,
+												parser: gParser
+											}))
+										});
+									}
+
 								}
 
-							}
+							})
+
 						}
 						// The Parameter is a single string === selector > directly scraped
 						else {
