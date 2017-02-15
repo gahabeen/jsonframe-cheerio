@@ -186,8 +186,8 @@ module.exports = function ($) {
 		res.attribute = res.selector.oneSplitFromEnd('@')[1].trim()
 		res.selector = res.selector.oneSplitFromEnd('@')[0].trim()
 	}
-
-	if (!res.extractor && !res.attribute && $(node).find(res.selector).get(0).tagName === "img") {
+	
+	if (!res.extractor && !res.attribute && $(node).find(res.selector)['0'] && $(node).find(res.selector)['0'].name.toLowerCase() === "img") {
 		res.attribute = "src"
 	}
 
