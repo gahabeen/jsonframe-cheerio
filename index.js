@@ -92,16 +92,28 @@ let extractByExtractor = function (data, extractor, plural = false) {
 	return result
 }
 
+let isAGroupKey = function (groupKey) {
+	let groupProperties = ['_g', 'group']
+	let isAGroup = false
+	groupProperties.forEach(function(value){
+		if(value === groupKey || groupKey.startsWith(value + '_')){
+			isAGroup = true
+			return
+		}
+	})
+	return isAGroup
+}
+
 let getPropertyFromObj = function (obj, propertyName) {
 	let properties = {
-		'selector': ['selector', '_s', '_selector'],
-		'attribute': ['attr', 'attribute', '_attr', '_a'],
-		'filter': ['filter', '_filter', '_f'],
-		'extractor': ['extractor', '_e', 'type', '_t'], //keep temporary old types
-		'data': ['data', '_d', '_data'],
-		'parserr': ['parser', '_parser', '_p'],
-		'group': ['_g', '_group']
+		'selector': ['_s', '_selector', 'selector'],
+		'attribute': ['_a', '_attr', 'attr', 'attribute'],
+		'filter': ['_filter', '_f', 'filter'],
+		'extractor': ['_e', 'extractor', 'type', '_t'], //keep temporary old types
+		'data': ['_d', '_data', 'data'],
+		'parser': ['_p', '_parser', 'parser']
 	}
+
 	let ob = this
 	let res = null
 	if (properties[propertyName]) {
@@ -257,32 +269,34 @@ module.exports = function ($) {
 				// Security for jsonpath in "_to" > "_frame"
 				if (key === "_frame" || key === "_from") {
 					elem[key] = obj[key]
+
+				// If it's a group key
+				} else if(isAGroupKey(key)) {
+					
+					let selector = getPropertyFromObj(obj[key], 'selector')
+					let data = getPropertyFromObj(obj[key], 'data')
+					let n = getNodeFromSmartSelector($(node), selector)
+					iterateThrough(data, elem, $(n))
+
 				} else {
 
 					try {
 
-						let gSelector, gAttribute, gExtractor, gData, gParser, gGroup, gFilter, gINFO
+						let gSelector, gAttribute, gExtractor, gData, gParser, gFilter, gINFO
 
 						if (_.isObject(obj[key]) && !_.isArray(obj[key])) {
+
 							gSelector = getPropertyFromObj(obj[key], 'selector')
 							gAttribute = getPropertyFromObj(obj[key], 'attribute')
 							gFilter = getPropertyFromObj(obj[key], 'filter')
 							gExtractor = getPropertyFromObj(obj[key], 'extractor')
 							gData = getPropertyFromObj(obj[key], 'data')
-							gParser = getPropertyFromObj(obj[key], 'parserr')
-							gGroup = getPropertyFromObj(obj, 'group')
+							gParser = getPropertyFromObj(obj[key], 'parser')
+
 							// console.log("gSelector", gSelector);
 							// console.log("gData", gData);
 
-							// console.log("gParser", gParser);
-
-
-							if (gSelector && gData && _.isObject(gGroup)) {
-
-								let n = getNodeFromSmartSelector($(node), gSelector)
-								iterateThrough(gData, elem, $(n))
-
-							} else if (gSelector && _.isString(gSelector)) {
+							if (gSelector && _.isString(gSelector)) {
 
 								gINFO = extractSmartSelector({
 									selector: gSelector
@@ -489,7 +503,7 @@ module.exports = function ($) {
 
 		iterateThrough(frame, output, mainNode)
 
-		if(string) {
+		if (string) {
 			output = JSON.stringify(output, null, 2)
 		}
 
