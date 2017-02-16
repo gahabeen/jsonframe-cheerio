@@ -19,7 +19,6 @@ let parseData = function (data, regex) {
 			// console.log("Regex error: ", error);
 		}
 	}
-
 	return result
 }
 
@@ -127,14 +126,6 @@ let getPropertyFromObj = function (obj, propertyName) {
 	return res
 }
 
-let getNodeFromSmartSelector = function (node, selector) {
-	if (selector === "_parent_") {
-		return node
-	} else {
-		return node.find(selector)
-	}
-}
-
 let timeSpent = function (lastTime) {
 	return new Date().getTime() - lastTime
 }
@@ -151,48 +142,134 @@ String.prototype.oneSplitFromEnd = function (char) {
 
 module.exports = function ($) {
 
+
+	let getNodesFromSmartSelector = function (node, selector) {
+		if (selector === "_parent_") {
+			return node
+		} else {
+			return $(node).find(selector)
+		}
+	}
+
+	let getFunctionalParameters = function (obj) {
+		let result = {
+			selector: getPropertyFromObj(obj, 'selector'),
+			attribute: getPropertyFromObj(obj, 'attribute'),
+			filter: getPropertyFromObj(obj, 'filter'),
+			extractor: getPropertyFromObj(obj, 'extractor'),
+			data: getPropertyFromObj(obj, 'data'),
+			parser: getPropertyFromObj(obj, 'parser')
+		}
+
+		return result
+	}
+
+	let updateFunctionalParametersFromSelector = function (g, selector, node) {
+
+		let gUpdate = extractSmartSelector({
+			selector: selector,
+			node: $(node)
+		})
+
+		g.selector = gUpdate.selector
+		g.parser = g.parser ? g.parser : gUpdate.parser
+		g.filter = g.filter ? g.filter : gUpdate.filter
+		g.attribute = g.attribute ? g.attribute : gUpdate.attribute
+		g.extractor = g.extractor ? g.extractor : gUpdate.extractor
+
+		return g
+	}
+
+	let getDataFromNodes = function (nodes, g, {
+		timestats = false,
+		multiple = true
+	} = {}) {
+		let result = []
+
+		if (timestats) {
+			result = {}
+			result['_value'] = []
+		}
+
+		$(nodes).each(function (i, n) {
+			let r = getTheRightData($(n), {
+				extractor: g.extractor,
+				filter: g.filter,
+				attr: g.attribute,
+				parser: g.parser
+			})
+
+			if (r) {
+				if (result['_value']) {
+					result['_value'].push(r)
+				} else {
+					result.push(r)
+				}
+			}
+			// not multiple wanted, stop at the first one
+			if(!multiple) {
+				return
+			}
+		})
+
+		if (result['_value']) {
+			result['_timestat'] = timeSpent(gTime)
+		}
+
+		// avoid listing
+		if(!multiple && result[0]) {
+			result = result[0]
+		}
+
+		if(result.length === 0){
+			result = null
+		}
+
+		return result
+	}
+
 	let extractSmartSelector = function ({
-	selector,
-	node = null,
-	attribute = null,
-	filter = null,
-	extractor = null,
-	parser = null
-}) {
-	let res = {
-		"selector": selector,
-		"attribute": attribute,
-		"filter": filter,
-		"extractor": extractor,
-		"parser": parser
-	}
+		selector,
+		node = null,
+		attribute = null,
+		filter = null,
+		extractor = null,
+		parser = null
+	}) {
+		let res = {
+			"selector": selector,
+			"attribute": attribute,
+			"filter": filter,
+			"extractor": extractor,
+			"parser": parser
+		}
 
-	if (res.selector.includes('||')) {
-		res.parser = res.selector.oneSplitFromEnd('||')[1].trim()
-		res.selector = res.selector.oneSplitFromEnd('||')[0].trim()
-	}
+		if (res.selector.includes('||')) {
+			res.parser = res.selector.oneSplitFromEnd('||')[1].trim()
+			res.selector = res.selector.oneSplitFromEnd('||')[0].trim()
+		}
 
-	if (res.selector.includes('|')) {
-		res.filter = res.selector.oneSplitFromEnd('|')[1].trim()
-		res.selector = res.selector.oneSplitFromEnd('|')[0].trim()
-	}
+		if (res.selector.includes('|')) {
+			res.filter = res.selector.oneSplitFromEnd('|')[1].trim()
+			res.selector = res.selector.oneSplitFromEnd('|')[0].trim()
+		}
 
-	if (res.selector.includes('<')) {
-		res.extractor = res.selector.oneSplitFromEnd('<')[1].trim()
-		res.selector = res.selector.oneSplitFromEnd('<')[0].trim()
-	}
+		if (res.selector.includes('<')) {
+			res.extractor = res.selector.oneSplitFromEnd('<')[1].trim()
+			res.selector = res.selector.oneSplitFromEnd('<')[0].trim()
+		}
 
-	if (res.selector.includes('@')) {
-		res.attribute = res.selector.oneSplitFromEnd('@')[1].trim()
-		res.selector = res.selector.oneSplitFromEnd('@')[0].trim()
-	}
-	
-	if (!res.extractor && !res.attribute && $(node).find(res.selector)['0'] && $(node).find(res.selector)['0'].name.toLowerCase() === "img") {
-		res.attribute = "src"
-	}
+		if (res.selector.includes('@')) {
+			res.attribute = res.selector.oneSplitFromEnd('@')[1].trim()
+			res.selector = res.selector.oneSplitFromEnd('@')[0].trim()
+		}
 
-	return res
-}
+		if (!res.extractor && !res.attribute && $(node).find(res.selector)['0'] && $(node).find(res.selector)['0'].name.toLowerCase() === "img") {
+			res.attribute = "src"
+		}
+
+		return res
+	}
 
 	let getTheRightData = function (node, {
 		attr = null,
@@ -202,55 +279,36 @@ module.exports = function ($) {
 		multiple = false
 	} = {}) {
 
-		let results = []
-		let localNodes = []
+		//assuming we handle only one node from getDataFromNodes
 
-		for (var index = 0; index < node.length; index++) {
-			localNodes.push(node[index])
-		}
+		let result = null
+		let localNode = node[0] || node // in case of many, shouldn't happen
 
-		if (multiple && localNodes.length > 1) {
-			// Do a looop and stuff
-		} else if (localNodes.length > 1) {
-			// reset to the only first child
-			let tempNode = localNodes[0]
-			localNodes = []
-			localNodes.push(tempNode)
-		}
-
-		localNodes.forEach(function (localNode, index) {
-
-			if (attr) {
-				results[index] = $(localNode).attr(attr)
-			} else if (extractor === "html") {
-				results[index] = $(localNode).html()
-			} else {
-				results[index] = $(localNode).text()
-			}
-
-			if (extractor && extractor !== "html") {
-				results[index] = extractByExtractor(results[index], extractor)
-			}
-
-			if (_.isObject(results[index])) {
-				_.forOwn(results[index], function (value, key) {
-					results[index][key] = filterData(results[index][key], filter)
-				})
-			} else {
-				results[index] = filterData(results[index], filter)
-			}
-
-			if (parser) {
-				results[index] = parseData(results[index], parser)
-			}
-
-		})
-
-		if (!multiple) {
-			return results[0]
+		if (attr) {
+			result = $(localNode).attr(attr)
+		} else if (extractor === "html") {
+			result = $(localNode).html()
 		} else {
-			return results
+			result = $(localNode).text()
 		}
+
+		if (extractor && extractor !== "html") {
+			result = extractByExtractor(result, extractor)
+		}
+
+		if (_.isObject(result)) {
+			_.forOwn(result, function (value, key) {
+				result[key] = filterData(result[key], filter)
+			})
+		} else {
+			result = filterData(result, filter)
+		}
+
+		if (parser) {
+			result = parseData(result, parser)
+		}
+
+		return result
 
 	}
 
@@ -280,36 +338,22 @@ module.exports = function ($) {
 
 					let selector = getPropertyFromObj(obj[key], 'selector')
 					let data = getPropertyFromObj(obj[key], 'data')
-					let n = getNodeFromSmartSelector($(node), selector)
+					let n = getNodesFromSmartSelector($(node), selector)
 					iterateThrough(data, elem, $(n))
 
 				} else {
 
 					try {
 
-						let gSelector, gAttribute, gExtractor, gData, gParser, gFilter, gINFO
+						let g = {}
 
 						if (_.isObject(obj[key]) && !_.isArray(obj[key])) {
 
-							gSelector = getPropertyFromObj(obj[key], 'selector')
-							gAttribute = getPropertyFromObj(obj[key], 'attribute')
-							gFilter = getPropertyFromObj(obj[key], 'filter')
-							gExtractor = getPropertyFromObj(obj[key], 'extractor')
-							gData = getPropertyFromObj(obj[key], 'data')
-							gParser = getPropertyFromObj(obj[key], 'parser')
+							g = getFunctionalParameters(obj[key])
 
-							if (gSelector && _.isString(gSelector)) {
+							if (g.selector && _.isString(g.selector)) {
 
-								gINFO = extractSmartSelector({
-									selector: gSelector,
-									node: $(node)
-								})
-
-								gSelector = gINFO.selector
-								gParser = gParser ? gParser : gINFO.parser
-								gFilter = gFilter ? gFilter : gINFO.filter
-								gAttribute = gAttribute ? gAttribute : gINFO.attribute
-								gExtractor = gExtractor ? gExtractor : gINFO.extractor
+								g = updateFunctionalParametersFromSelector(g, g.selector, $(node))
 
 								if (gData && _.isObject(gData)) {
 
@@ -318,42 +362,21 @@ module.exports = function ($) {
 										// Check if object in array
 										if (_.isObject(gData[0]) && _.size(gData[0]) > 0) {
 
-											elem[key] = [];
+											elem[key] = []
 
-											$(node).find(gSelector).each(function (i, n) {
-												elem[key][i] = {};
-												iterateThrough(gData[0], elem[key][i], $(n));
+											$(node).find(g.selector).each(function (i, n) {
+												elem[key][i] = {}
+												iterateThrough(gData[0], elem[key][i], $(n))
 											});
 
 											// If no object, taking the single string
 										} else if (_.isString(gData[0])) {
-											elem[key] = []
 
-											let n = getNodeFromSmartSelector($(node), gSelector)
-
-											if (timestats) {
-												elem[key] = {}
-												elem[key]['_value'] = []
-												n.each(function (i, n) {
-													elem[key]['_value'][i] = getTheRightData($(n), {
-														extractor: gExtractor,
-														filter: gFilter,
-														attr: gAttribute,
-														parser: gParser
-													})
-												});
-												elem[key]['_timestat'] = timeSpent(gTime)
-											} else {
-												n.each(function (i, n) {
-													elem[key][i] = getTheRightData($(n), {
-														extractor: gExtractor,
-														filter: gFilter,
-														attr: gAttribute,
-														parser: gParser
-													})
-												});
+											let n = getNodesFromSmartSelector($(node), g.selector)
+											let dataResp = getDataFromNodes($(n), g)
+											if (dataResp) {
+												elem[key] = dataResp
 											}
-
 
 										}
 
@@ -362,7 +385,7 @@ module.exports = function ($) {
 
 										if (_.size(gData) > 0) {
 											elem[key] = {};
-											let n = $(node).find(gSelector).first();
+											let n = $(node).find(g.selector).first();
 											iterateThrough(gData, elem[key], $(n));
 										}
 
@@ -370,31 +393,13 @@ module.exports = function ($) {
 
 								} else {
 
-									let n = getNodeFromSmartSelector($(node), gSelector)
-
-									if (n.length > 0) {
-
-										if (timestats) {
-											elem[key] = {}
-											elem[key]['_value'] = getTheRightData($(n), {
-												extractor: gExtractor,
-												filter: gFilter,
-												attr: gAttribute,
-												parser: gParser
-											});
-											elem[key]['_timestat'] = timeSpent(gTime)
-										} else {
-											elem[key] = getTheRightData($(n), {
-												extractor: gExtractor,
-												filter: gFilter,
-												attr: gAttribute,
-												parser: gParser
-											});
-										}
-
-									} else {
-										elem[key] = null;
+									let n = getNodesFromSmartSelector($(node), g.selector)
+									let dataResp = getDataFromNodes($(n), g, {multiple: false})
+									if (dataResp) {
+										// push data as unit of array
+										elem[key] = dataResp
 									}
+									
 								}
 							}
 
@@ -406,96 +411,38 @@ module.exports = function ($) {
 						} else if (_.isArray(obj[key])) {
 
 							elem[key] = []
+							// For each unique string
 							obj[key].forEach(function (arrSelector, h) {
 								if (_.isString(arrSelector)) {
 
-									gINFO = extractSmartSelector({
-										selector: arrSelector,
-										node: $(node)
-									})
-
-									gSelector = gINFO.selector
-									gParser = gParser ? gParser : gINFO.parser
-									gFilter = gFilter ? gFilter : gINFO.filter
-									gAttribute = gAttribute ? gAttribute : gINFO.attribute
-									gExtractor = gExtractor ? gExtractor : gINFO.extractor
-
-									let n = getNodeFromSmartSelector($(node), gSelector)
-
-									if (timestats) {
-										elem[key] = {}
-										elem[key]['_value'] = []
-										n.each(function (i, n) {
-											elem[key]['_value'].push(getTheRightData($(n), {
-												extractor: gExtractor,
-												filter: gFilter,
-												attr: gAttribute,
-												parser: gParser
-											}))
-										});
-										elem[key]['_timestat'] = timeSpent(gTime)
-									} else {
-										n.each(function (i, n) {
-											elem[key].push(getTheRightData($(n), {
-												extractor: gExtractor,
-												filter: gFilter,
-												attr: gAttribute,
-												parser: gParser
-											}))
-										});
+									g = updateFunctionalParametersFromSelector(g, arrSelector, $(node))
+									let n = getNodesFromSmartSelector($(node), g.selector)
+									let dataResp = getDataFromNodes($(n), g)
+									if (dataResp) {
+										// push data as unit of array
+										elem[key].push(...dataResp)
 									}
 
 								}
-
 							})
 
 						}
 						// The Parameter is a single string === selector > directly scraped
 						else {
 
-							gINFO = extractSmartSelector({
-								selector: obj[key],
-								node: $(node)
-							})
-
-							gSelector = gINFO.selector
-							gParser = gParser ? gParser : gINFO.parser
-							gFilter = gFilter ? gFilter : gINFO.filter
-							gAttribute = gAttribute ? gAttribute : gINFO.attribute
-							gExtractor = gExtractor ? gExtractor : gINFO.extractor
-
-							let n = getNodeFromSmartSelector($(node), gSelector)
-
-							if (n.length > 0) {
-
-								if (timestats) {
-									elem[key] = {}
-									elem[key]['_value'] = getTheRightData(n, {
-										extractor: gExtractor,
-										filter: gFilter,
-										attr: gAttribute,
-										parser: gParser
-									})
-									elem[key]['_timestat'] = timeSpent(gTime)
-								} else {
-									elem[key] = getTheRightData(n, {
-										extractor: gExtractor,
-										filter: gFilter,
-										attr: gAttribute,
-										parser: gParser
-									})
-								}
-
-
-							} else {
-								elem[key] = null
+							g = updateFunctionalParametersFromSelector(g, obj[key], $(node))
+							let n = getNodesFromSmartSelector($(node), g.selector)
+							let dataResp = getDataFromNodes($(n), g, {multiple: false})
+							if (dataResp) {
+								// push data as unit of array
+								elem[key] = dataResp
 							}
+
 						}
 
 					} catch (error) {
 						console.log(error)
 					}
-
 
 				}
 
