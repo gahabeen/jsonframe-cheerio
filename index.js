@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 const _ = require('lodash')
 const chrono = require('chrono-node')
@@ -16,7 +16,7 @@ let parseData = function (data, regex) {
 			}
 			result = data.match(rgx)[0]
 		} catch (error) {
-			// console.log("Regex error: ", error);
+			// console.log("Regex error: ", error)
 		}
 	}
 	return result
@@ -55,7 +55,7 @@ let extractByExtractor = function (data, extractor, plural = false) {
 			result = data.match(phoneRegex) !== null ? data.match(phoneRegex)[0] : data
 		}
 		// let countryCode = result.match(/([A-Z])+/)[0]
-		// console.log("countryCode", countryCode);
+		// console.log("countryCode", countryCode)
 		// if (countryCode) {
 		// 	try {
 		// 		result = phoneUtil.parse(result, "US") // with option, the country code number
@@ -327,17 +327,17 @@ module.exports = function ($) {
 
 			let gTime = new Date().getTime()
 
-			Object.keys(obj).forEach(function (key) {
+			_.forOwn(obj, function (currentValue, key) {
 
 				// Security for jsonpath in "_to" > "_frame"
 				if (key === "_frame" || key === "_from") {
-					elem[key] = obj[key]
+					elem[key] = currentValue
 
 					// If it's a group key
 				} else if (isAGroupKey(key)) {
 
-					let selector = getPropertyFromObj(obj[key], 'selector')
-					let data = getPropertyFromObj(obj[key], 'data')
+					let selector = getPropertyFromObj(currentValue, 'selector')
+					let data = getPropertyFromObj(currentValue, 'data')
 					let n = getNodesFromSmartSelector($(node), selector)
 					iterateThrough(data, elem, $(n))
 
@@ -347,30 +347,27 @@ module.exports = function ($) {
 
 						let g = {}
 
-						if (_.isObject(obj[key]) && !_.isArray(obj[key])) {
-
-							g = getFunctionalParameters(obj[key])
+						if (_.isObject(currentValue) && !_.isArray(currentValue)) {
+							g = getFunctionalParameters(currentValue)
 
 							if (g.selector && _.isString(g.selector)) {
-
 								g = updateFunctionalParametersFromSelector(g, g.selector, $(node))
 
-								if (gData && _.isObject(gData)) {
+								if (g.data && _.isObject(g.data)) {
 
-									if (_.isArray(gData)) {
-
+									if (_.isArray(g.data)) {
 										// Check if object in array
-										if (_.isObject(gData[0]) && _.size(gData[0]) > 0) {
+										if (_.isObject(g.data[0]) && _.size(g.data[0]) > 0) {
 
 											elem[key] = []
 
 											$(node).find(g.selector).each(function (i, n) {
 												elem[key][i] = {}
-												iterateThrough(gData[0], elem[key][i], $(n))
-											});
+												iterateThrough(g.data[0], elem[key][i], $(n))
+											})
 
 											// If no object, taking the single string
-										} else if (_.isString(gData[0])) {
+										} else if (_.isString(g.data[0])) {
 
 											let n = getNodesFromSmartSelector($(node), g.selector)
 											let dataResp = getDataFromNodes($(n), g)
@@ -383,10 +380,10 @@ module.exports = function ($) {
 										// Simple data object to use parent selector as base
 									} else {
 
-										if (_.size(gData) > 0) {
-											elem[key] = {};
-											let n = $(node).find(g.selector).first();
-											iterateThrough(gData, elem[key], $(n));
+										if (_.size(g.data) > 0) {
+											elem[key] = {}
+											let n = $(node).find(g.selector).first()
+											iterateThrough(g.data, elem[key], $(n))
 										}
 
 									}
@@ -405,14 +402,14 @@ module.exports = function ($) {
 
 							// There is no Selector but still an Object for organization
 							else {
-								elem[key] = {};
-								iterateThrough(obj[key], elem[key], node);
+								elem[key] = {}
+								iterateThrough(currentValue, elem[key], node)
 							}
-						} else if (_.isArray(obj[key])) {
+						} else if (_.isArray(currentValue)) {
 
 							elem[key] = []
 							// For each unique string
-							obj[key].forEach(function (arrSelector, h) {
+							currentValue.forEach(function (arrSelector, h) {
 								if (_.isString(arrSelector)) {
 
 									g = updateFunctionalParametersFromSelector(g, arrSelector, $(node))
@@ -430,7 +427,7 @@ module.exports = function ($) {
 						// The Parameter is a single string === selector > directly scraped
 						else {
 
-							g = updateFunctionalParametersFromSelector(g, obj[key], $(node))
+							g = updateFunctionalParametersFromSelector(g, currentValue, $(node))
 							let n = getNodesFromSmartSelector($(node), g.selector)
 							let dataResp = getDataFromNodes($(n), g, {multiple: false})
 							if (dataResp) {
@@ -456,7 +453,7 @@ module.exports = function ($) {
 		}
 
 		return output
-	};
+	}
 
 
-};
+}
