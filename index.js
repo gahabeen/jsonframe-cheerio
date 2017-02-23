@@ -36,9 +36,12 @@ let filterData = function (data, filter) {
 	} else if (["capitalize", "cap"].includes(filter)) {
 		result = _.startCase(result)
 	} else if (["number", "nb"].includes(filter)) {
-		result = result.replace(/\D/g, "")
-	} else {
-		// Default trim and set one spaces
+		result = result.replace(/\D/gm, "")
+	} else if (["words", "w"].includes(filter)){
+		result = result.replace(/\W/gm, " ")
+	} else if (["noescapchar", "nec"].includes(filter)) {
+		result = result.replace(/\t+|\n+|\r+/gm, " ")
+	} else if (["compact", "cmp"].includes(filter) || !filter) {
 		result = result.replace(/\s+/gm, " ").trim()
 	}
 	return result
@@ -304,18 +307,14 @@ module.exports = function ($) {
 
 		if (_.isObject(result)) {
 			_.forOwn(result, function (value, key) {
-				if (_.isArray(filter)) {
-					filter.forEach(function (f, index) {
-						result[key] = filterData(result[key], f)
-					})
-				}
+				filter.forEach(function (f, index) {
+					result[key] = filterData(result[key], f)
+				})
 			})
 		} else {
-			if (_.isArray(filter)) {
-				filter.forEach(function (f, index) {
-					result = filterData(result, f)
-				})
-			}
+			filter.forEach(function (f, index) {
+				result = filterData(result, f)
+			})
 		}
 
 		if (parser) {
