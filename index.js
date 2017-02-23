@@ -52,7 +52,7 @@ let extractByExtractor = function (data, extractor, plural = false) {
 		if (plural) {
 			result = data.match(phoneRegex) || data
 		} else {
-			result = data.match(phoneRegex) !== null ? data.match(phoneRegex)[0] : data
+			result = data.match(phoneRegex) !== null ? data.match(phoneRegex)[0] : ""
 		}
 		// let countryCode = result.match(/([A-Z])+/)[0]
 		// console.log("countryCode", countryCode)
@@ -67,7 +67,7 @@ let extractByExtractor = function (data, extractor, plural = false) {
 		if (plural) {
 			result = data.match(emailRegex) || data
 		} else {
-			result = data.match(emailRegex) !== null ? data.match(emailRegex)[0] : data
+			result = data.match(emailRegex) !== null ? data.match(emailRegex)[0] : ""
 		}
 	} else if (["date", "d"].includes(extractor)) {
 		result = chrono.casual.parseDate(data).toString()
@@ -92,7 +92,7 @@ let extractByExtractor = function (data, extractor, plural = false) {
 }
 
 let isAGroupKey = function (groupKey) {
-	let groupProperties = ['_g', 'group']
+	let groupProperties = ['_g', '_group', '_groupe']
 	let isAGroup = false
 	groupProperties.forEach(function (value) {
 		if (value === groupKey || groupKey.startsWith(value + '_')) {
@@ -105,12 +105,13 @@ let isAGroupKey = function (groupKey) {
 
 let getPropertyFromObj = function (obj, propertyName) {
 	let properties = {
-		'selector': ['_s', '_selector', 'selector'],
-		'attribute': ['_a', '_attr', 'attr', 'attribute'],
-		'filter': ['_filter', '_f', 'filter'],
-		'extractor': ['_e', 'extractor', 'type', '_t'], //keep temporary old types
-		'data': ['_d', '_data', 'data'],
-		'parser': ['_p', '_parser', 'parser']
+		'selector': ['_s', '_selector', '_selecteur', 'selector'],
+		'attribute': ['_a', '_attr', '_attribut', 'attr', 'attribute'],
+		'filter': ['_filter', '_f', '_filtre', 'filter'],
+		'extractor': ['_e', '_extracteur', 'extractor', 'type', '_t'], //keep temporary old types
+		'data': ['_d', '_data', '_donnee', 'data'],
+		'parser': ['_p', '_parser', '_parseur', 'parser'],
+		'break': ['_b', '_break', '_cassure']
 	}
 
 	let ob = this
@@ -158,7 +159,8 @@ module.exports = function ($) {
 			filter: getPropertyFromObj(obj, 'filter'),
 			extractor: getPropertyFromObj(obj, 'extractor'),
 			data: getPropertyFromObj(obj, 'data'),
-			parser: getPropertyFromObj(obj, 'parser')
+			parser: getPropertyFromObj(obj, 'parser'),
+			break: getPropertyFromObj(obj, 'break')
 		}
 
 		return result
@@ -191,6 +193,8 @@ module.exports = function ($) {
 			result['_value'] = []
 		}
 
+
+		// Getting data
 		$(nodes).each(function (i, n) {
 			let r = getTheRightData($(n), {
 				extractor: g.extractor,
@@ -207,7 +211,7 @@ module.exports = function ($) {
 				}
 			}
 			// not multiple wanted, stop at the first one
-			if(!multiple) {
+			if (!multiple) {
 				return
 			}
 		})
@@ -217,11 +221,11 @@ module.exports = function ($) {
 		}
 
 		// avoid listing
-		if(!multiple && result[0]) {
+		if (!multiple && result[0]) {
 			result = result[0]
 		}
 
-		if(result.length === 0){
+		if (result.length === 0) {
 			result = null
 		}
 
@@ -350,14 +354,45 @@ module.exports = function ($) {
 						if (_.isObject(currentValue) && !_.isArray(currentValue)) {
 							g = getFunctionalParameters(currentValue)
 
+
 							if (g.selector && _.isString(g.selector)) {
 								g = updateFunctionalParametersFromSelector(g, g.selector, $(node))
 
 								if (g.data && _.isObject(g.data)) {
 
 									if (_.isArray(g.data)) {
+
+										// Check if break included
+										if (g.break && _.isString(g.break)) {
+
+											let n = getNodesFromSmartSelector($(node), g.selector)
+											let nodes = $(n).children(g.break)
+
+											var breaklist = "#breaklist1234"
+											$(n).after('<div id="breaklist1234"></div>')
+
+											// Creating a proper list
+											$(nodes).each(function (index, nn) {
+												// console.log("nn", $(nn).text());
+												$(breaklist).append('<div class="break b' + index + '"></div>')
+												$('.break.b' + index).append(nn)
+				
+												$($(n).find(g.break)[index]).nextUntil(g.break).each(function (i, e) {
+													$(breaklist).find('.break.b' + index).append(e)
+												})
+											})
+
+											elem[key] = []
+
+											// Iterating in this list
+											$(breaklist).children(".break").each(function(index, nn){
+												elem[key][index] = {}
+												iterateThrough(g.data[0], elem[key][index], $(nn))
+											})
+
+										}
 										// Check if object in array
-										if (_.isObject(g.data[0]) && _.size(g.data[0]) > 0) {
+										else if (_.isObject(g.data[0]) && _.size(g.data[0]) > 0) {
 
 											elem[key] = []
 
@@ -391,12 +426,14 @@ module.exports = function ($) {
 								} else {
 
 									let n = getNodesFromSmartSelector($(node), g.selector)
-									let dataResp = getDataFromNodes($(n), g, {multiple: false})
+									let dataResp = getDataFromNodes($(n), g, {
+										multiple: false
+									})
 									if (dataResp) {
 										// push data as unit of array
 										elem[key] = dataResp
 									}
-									
+
 								}
 							}
 
@@ -429,7 +466,9 @@ module.exports = function ($) {
 
 							g = updateFunctionalParametersFromSelector(g, currentValue, $(node))
 							let n = getNodesFromSmartSelector($(node), g.selector)
-							let dataResp = getDataFromNodes($(n), g, {multiple: false})
+							let dataResp = getDataFromNodes($(n), g, {
+								multiple: false
+							})
 							if (dataResp) {
 								// push data as unit of array
 								elem[key] = dataResp
