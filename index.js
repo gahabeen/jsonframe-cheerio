@@ -3,7 +3,7 @@
 const _ = require('lodash')
 const chrono = require('chrono-node')
 const humanname = require('humanname')
-const phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance()
+// const phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance()
 
 
 let parseData = function (data, regex) {
