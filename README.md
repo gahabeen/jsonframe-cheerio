@@ -479,6 +479,12 @@ npm run test-watch
 
 ## Changelog
 
+**2.0.3** (23/02/2017)
+- Possibility to scrape unstructured data with breaks (`_b`). More about this soooon in the readme.
+- New filters: `words or w`, `noescapchar or nec` and `compact or cmp`
+- Multi-filters is available now. Ex: `.selector | words compact`. Simply separated by spaces.
+- Disabling google libphonenumber for now
+
 **2.0.2** (15/02/2017)
 - String option to get a stringified output right away
 - Multi-groups possibility at same level (several _g wouldn't work as same property name) in frame like _g_head and _g_body for example

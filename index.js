@@ -307,14 +307,22 @@ module.exports = function ($) {
 
 		if (_.isObject(result)) {
 			_.forOwn(result, function (value, key) {
-				filter.forEach(function (f, index) {
-					result[key] = filterData(result[key], f)
-				})
+				if(_.isArray(filter)){
+					filter.forEach(function (f, index) {
+						result[key] = filterData(result[key], f)
+					})
+				} else {
+					result[key] = filterData(result[key], filter)
+				}
 			})
 		} else {
-			filter.forEach(function (f, index) {
-				result = filterData(result, f)
-			})
+			if(_.isArray(filter)){
+				filter.forEach(function (f, index) {
+					result = filterData(result, f)
+				})
+			} else {
+				result = filterData(result, filter)
+			}
 		}
 
 		if (parser) {
