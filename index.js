@@ -23,6 +23,7 @@ let parseData = function (data, regex) {
 }
 
 let filterData = function (data, filter) {
+	
 	let result = data
 	if (["raw"].includes(filter)) {
 		// let the raw data
@@ -34,7 +35,7 @@ let filterData = function (data, filter) {
 		result = result.toUpperCase()
 	} else if (["capitalize", "cap"].includes(filter)) {
 		result = _.startCase(result)
-	} else if (["numbers"].includes(filter)) {
+	} else if (["number", "nb"].includes(filter)) {
 		result = result.replace(/\D/g, "")
 	} else {
 		// Default trim and set one spaces
@@ -255,6 +256,7 @@ module.exports = function ($) {
 
 		if (res.selector.includes('|')) {
 			res.filter = res.selector.oneSplitFromEnd('|')[1].trim()
+			res.filter = res.filter.split(/\s+/)
 			res.selector = res.selector.oneSplitFromEnd('|')[0].trim()
 		}
 
@@ -302,10 +304,18 @@ module.exports = function ($) {
 
 		if (_.isObject(result)) {
 			_.forOwn(result, function (value, key) {
-				result[key] = filterData(result[key], filter)
+				if (_.isArray(filter)) {
+					filter.forEach(function (f, index) {
+						result[key] = filterData(result[key], f)
+					})
+				}
 			})
 		} else {
-			result = filterData(result, filter)
+			if (_.isArray(filter)) {
+				filter.forEach(function (f, index) {
+					result = filterData(result, f)
+				})
+			}
 		}
 
 		if (parser) {
@@ -376,7 +386,7 @@ module.exports = function ($) {
 												// console.log("nn", $(nn).text());
 												$(breaklist).append('<div class="break b' + index + '"></div>')
 												$('.break.b' + index).append(nn)
-				
+
 												$($(n).find(g.break)[index]).nextUntil(g.break).each(function (i, e) {
 													$(breaklist).find('.break.b' + index).append(e)
 												})
@@ -385,7 +395,7 @@ module.exports = function ($) {
 											elem[key] = []
 
 											// Iterating in this list
-											$(breaklist).children(".break").each(function(index, nn){
+											$(breaklist).children(".break").each(function (index, nn) {
 												elem[key][index] = {}
 												iterateThrough(g.data[0], elem[key][index], $(nn))
 											})

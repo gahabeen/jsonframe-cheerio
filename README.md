@@ -180,9 +180,33 @@ console.log( result )
 
 
 #### Extractor
-`|` inside the selector `_s` allows you to do it inline
+`<` inside the selector `_s` allows you to do it inline
 
 It currently supports `email` (also `mail`), `telephone` (also `phone`) and `html` (to get the inner html) and by default (no declaration), we get the `inner text`.
+
+```js
+...
+let frame = { 
+	"email": "[itemprop=email] < phone",
+	"frphone": "[itemprop=frphone] < phone"
+}
+
+let result = $('body').scrape(frame, { string: true })
+console.log( result )
+
+/* output =>
+	{ 
+		"email": "example@google.net",
+		"frphone": "33238303790"
+	}
+*/
+...
+```
+
+#### Filter
+`|` inside the selector `_s` allows you to do it inline
+
+It currently supports `trim` (remove spaces at beginning and end), `lowercase or lcase`, `uppercase or ucase`, `capitalize or cap` and `number or nb`.
 
 ```js
 ...
