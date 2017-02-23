@@ -14,10 +14,7 @@
 	</a>
 </h4>
 
-⚠ Careful if you've been using **jsonframe** from the **version 1.x.x**, some things changed to make it more **flexible**, **faster to use (inline parameters)** and **more meaningful in the syntax**.
-[See the changelog](#changelog)
-
-## **2.0.2** features
+## **2.0.3** features
 
 😍 **JSON Syntax**: input json, output the same structured json including with scraped data
 
@@ -476,8 +473,10 @@ Watching test on updates
 npm run test-watch
 ```
 
-
 ## Changelog
+
+⚠ Careful if you've been using **jsonframe** from the **version 1.x.x**, some things changed to make it more **flexible**, **faster to use (inline parameters)** and **more meaningful in the syntax**.
+[See the changelog](#changelog)
 
 **2.0.3** (23/02/2017)
 - Possibility to scrape unstructured data with breaks (`_b`). More about this soooon in the readme.
