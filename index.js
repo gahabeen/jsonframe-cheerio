@@ -6,7 +6,7 @@ const humanname = require('humanname')
 // const phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance()
 
 
-let parseData = function (data, regex) {
+let parseData = function (data, regex, {multiple = false} = {}) {
 	let result = data
 	if (regex) {
 		try {
@@ -14,7 +14,12 @@ let parseData = function (data, regex) {
 			if (_.isString(regex)) {
 				rgx = new RegExp(regex, 'gim')
 			}
-			result = data.match(rgx)[0]
+			if(multiple){
+				console.log("multiple");
+				result = data.match(rgx)
+			}else {
+				result = data.match(rgx)[0]
+			}
 		} catch (error) {
 			// console.log("Regex error: ", error)
 		}
@@ -47,14 +52,14 @@ let filterData = function (data, filter) {
 	return result
 }
 
-let extractByExtractor = function (data, extractor, plural = false) {
+let extractByExtractor = function (data, extractor, {multiple = false} = {}) {
 	let result = data
 	let emailRegex = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gmi
 	let phoneRegex = /\+?\(?\d*\)? ?\(?\d+\)?\d*([\s./-]\d{2,})+/gmi
 
 	if (["phone", "telephone"].includes(extractor)) {
-		if (plural) {
-			result = data.match(phoneRegex) || data
+		if (multiple) {
+			result = data.match(phoneRegex) || ""
 		} else {
 			result = data.match(phoneRegex) !== null ? data.match(phoneRegex)[0] : ""
 		}
@@ -68,7 +73,7 @@ let extractByExtractor = function (data, extractor, plural = false) {
 		// 	}
 		// }
 	} else if (["email", "mail", "@"].includes(extractor)) {
-		if (plural) {
+		if (multiple) {
 			result = data.match(emailRegex) || data
 		} else {
 			result = data.match(emailRegex) !== null ? data.match(emailRegex)[0] : ""
@@ -197,14 +202,14 @@ module.exports = function ($) {
 			result['_value'] = []
 		}
 
-
 		// Getting data
 		$(nodes).each(function (i, n) {
 			let r = getTheRightData($(n), {
 				extractor: g.extractor,
 				filter: g.filter,
 				attr: g.attribute,
-				parser: g.parser
+				parser: g.parser,
+				multiple: multiple
 			})
 
 			if (r) {
@@ -302,7 +307,7 @@ module.exports = function ($) {
 		}
 
 		if (extractor && extractor !== "html") {
-			result = extractByExtractor(result, extractor)
+			result = extractByExtractor(result, extractor, {multiple})
 		}
 
 		if (_.isObject(result)) {
@@ -326,7 +331,7 @@ module.exports = function ($) {
 		}
 
 		if (parser) {
-			result = parseData(result, parser)
+			result = parseData(result, parser, {multiple})
 		}
 
 		return result
