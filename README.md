@@ -16,7 +16,7 @@
 	</a>
 </h4>
 
-## **2.0.3** features
+## **2.0.4** features
 
 😍 **JSON Syntax**: input json, output the same structured json including with scraped data
 
@@ -479,6 +479,9 @@ npm run test-watch
 
 ⚠ Careful if you've been using **jsonframe** from the **version 1.x.x**, some things changed to make it more **flexible**, **faster to use (inline parameters)** and **more meaningful in the syntax**.
 [See the changelog](#changelog)
+
+**2.0.4** (24/02/2017)
+- Inline array for extractors like `"mails": [".parentSelector < email"]`
 
 **2.0.3** (23/02/2017)
 - Possibility to scrape unstructured data with breaks (`_b`). More about this soooon in the readme.
