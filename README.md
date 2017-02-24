@@ -484,6 +484,7 @@ npm run test-watch
 - Inline array for extractors like `"mails": [".parentSelector < email"]`
 - Adds french words: `prenom` and `nom` to humanname extractor
 - Add filters: `right(number)`, `left(number)`
+- Set a stricter regex for email extractor `/([a-zA-Z0-9._-]{0,30}@[a-zA-Z0-9._-]{0,15}\.[a-zA-Z0-9._-]{0,15})/gmi`
 
 **2.0.3** (23/02/2017)
 - Possibility to scrape unstructured data with breaks (`_b`). More about this soooon in the readme.
