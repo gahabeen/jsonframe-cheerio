@@ -6,7 +6,9 @@ const humanname = require('humanname')
 // const phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance()
 
 
-let parseData = function (data, regex, {multiple = false} = {}) {
+let parseData = function (data, regex, {
+	multiple = false
+} = {}) {
 	let result = data
 	if (regex) {
 		try {
@@ -14,10 +16,10 @@ let parseData = function (data, regex, {multiple = false} = {}) {
 			if (_.isString(regex)) {
 				rgx = new RegExp(regex, 'gim')
 			}
-			if(multiple){
+			if (multiple) {
 				console.log("multiple");
 				result = data.match(rgx)
-			}else {
+			} else {
 				result = data.match(rgx)[0]
 			}
 		} catch (error) {
@@ -28,7 +30,7 @@ let parseData = function (data, regex, {multiple = false} = {}) {
 }
 
 let filterData = function (data, filter) {
-	
+
 	let result = data
 	if (["raw"].includes(filter)) {
 		// let the raw data
@@ -42,17 +44,26 @@ let filterData = function (data, filter) {
 		result = _.startCase(result)
 	} else if (["number", "nb"].includes(filter)) {
 		result = result.replace(/\D/gm, "")
-	} else if (["words", "w"].includes(filter)){
+	} else if (["words", "w"].includes(filter)) {
 		result = result.replace(/\W/gm, " ")
 	} else if (["noescapchar", "nec"].includes(filter)) {
 		result = result.replace(/\t+|\n+|\r+/gm, " ")
+	} else if (filter && filter.includes("right")) {
+		let nb = filter.match(/\d+/g)[0]
+		result = result.substr(result.length - nb)
+	} else if (filter && filter.includes("left")) {
+		let nb = filter.match(/\d+/g)[0]
+		result = result.substr(0, nb)
+		//default
 	} else if (["compact", "cmp"].includes(filter) || !filter) {
 		result = result.replace(/\s+/gm, " ").trim()
 	}
 	return result
 }
 
-let extractByExtractor = function (data, extractor, {multiple = false} = {}) {
+let extractByExtractor = function (data, extractor, {
+	multiple = false
+} = {}) {
 	let result = data
 	let emailRegex = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gmi
 	let phoneRegex = /\+?\(?\d*\)? ?\(?\d+\)?\d*([\s./-]\d{2,})+/gmi
@@ -75,7 +86,7 @@ let extractByExtractor = function (data, extractor, {multiple = false} = {}) {
 	} else if (["email", "mail", "@"].includes(extractor)) {
 		if (multiple) {
 			result = data.match(emailRegex) || data
-			if(_.isArray(result) && result.length === 1) {
+			if (_.isArray(result) && result.length === 1) {
 				result = result[0]
 			}
 		} else {
@@ -217,15 +228,15 @@ module.exports = function ($) {
 
 			if (r) {
 				if (result['_value']) {
-					if(_.isArray(r) && r.length > 1){
+					if (_.isArray(r) && r.length > 1) {
 						result['_value'] = r
-					} else {						
+					} else {
 						result['_value'].push(r)
 					}
 				} else {
-					if(_.isArray(r) && r.length > 1){
+					if (_.isArray(r) && r.length > 1) {
 						result = r
-					} else {			
+					} else {
 						result.push(r)
 					}
 				}
@@ -318,12 +329,14 @@ module.exports = function ($) {
 		}
 
 		if (extractor && extractor !== "html") {
-			result = extractByExtractor(result, extractor, {multiple})
+			result = extractByExtractor(result, extractor, {
+				multiple
+			})
 		}
 
 		if (_.isObject(result)) {
 			_.forOwn(result, function (value, key) {
-				if(_.isArray(filter)){
+				if (_.isArray(filter)) {
 					filter.forEach(function (f, index) {
 						result[key] = filterData(result[key], f)
 					})
@@ -332,7 +345,7 @@ module.exports = function ($) {
 				}
 			})
 		} else {
-			if(_.isArray(filter)){
+			if (_.isArray(filter)) {
 				filter.forEach(function (f, index) {
 					result = filterData(result, f)
 				})
@@ -342,9 +355,11 @@ module.exports = function ($) {
 		}
 
 		if (parser) {
-			result = parseData(result, parser, {multiple})
+			result = parseData(result, parser, {
+				multiple
+			})
 		}
-		
+
 		return result
 
 	}
