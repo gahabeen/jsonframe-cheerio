@@ -83,13 +83,13 @@ let extractByExtractor = function (data, extractor, {multiple = false} = {}) {
 		}
 	} else if (["date", "d"].includes(extractor)) {
 		result = chrono.casual.parseDate(data).toString()
-	} else if (["fullName", "firstName", "lastName", "initials", "suffix", "salutation"].includes(extractor)) {
+	} else if (["fullName", "prenom", "firstName", "nom", "lastName", "initials", "suffix", "salutation"].includes(extractor)) {
 		result = humanname.parse(data)
 		if ("fullName".includes(extractor)) {
 			// return the object
-		} else if ("firstName".includes(extractor)) {
+		} else if (["firstName", "prenom"].includes(extractor)) {
 			result = result.firstName
-		} else if ("lastName".includes(extractor)) {
+		} else if (["lastName", "nom"].includes(extractor)) {
 			result = result.lastName
 		} else if ("initials".includes(extractor)) {
 			result = result.initials
