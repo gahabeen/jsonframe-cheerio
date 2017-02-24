@@ -1,6 +1,6 @@
 {
   "name": "jsonframe-cheerio",
-  "version": "2.0.41",
+  "version": "2.0.42",
   "description": "simple multi-level scraper json input/output",
   "main": "index.js",
   "scripts": {
