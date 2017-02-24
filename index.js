@@ -75,6 +75,9 @@ let extractByExtractor = function (data, extractor, {multiple = false} = {}) {
 	} else if (["email", "mail", "@"].includes(extractor)) {
 		if (multiple) {
 			result = data.match(emailRegex) || data
+			if(_.isArray(result) && result.length === 1) {
+				result = result[0]
+			}
 		} else {
 			result = data.match(emailRegex) !== null ? data.match(emailRegex)[0] : ""
 		}
@@ -214,9 +217,17 @@ module.exports = function ($) {
 
 			if (r) {
 				if (result['_value']) {
-					result['_value'].push(r)
+					if(_.isArray(r) && r.length > 1){
+						result['_value'] = r
+					} else {						
+						result['_value'].push(r)
+					}
 				} else {
-					result.push(r)
+					if(_.isArray(r) && r.length > 1){
+						result = r
+					} else {			
+						result.push(r)
+					}
 				}
 			}
 			// not multiple wanted, stop at the first one
@@ -333,7 +344,7 @@ module.exports = function ($) {
 		if (parser) {
 			result = parseData(result, parser, {multiple})
 		}
-
+		
 		return result
 
 	}
