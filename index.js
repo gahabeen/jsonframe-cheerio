@@ -65,7 +65,7 @@ let extractByExtractor = function (data, extractor, {
 	multiple = false
 } = {}) {
 	let result = data
-	let emailRegex = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gmi
+	let emailRegex = /([a-zA-Z0-9._-]{0,30}@[a-zA-Z0-9._-]{0,15}\.[a-zA-Z0-9._-]{0,15})/gmi
 	let phoneRegex = /\+?\(?\d*\)? ?\(?\d+\)?\d*([\s./-]\d{2,})+/gmi
 
 	if (["phone", "telephone"].includes(extractor)) {
