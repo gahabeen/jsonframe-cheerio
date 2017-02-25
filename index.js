@@ -3,6 +3,7 @@
 const _ = require('lodash')
 const chrono = require('chrono-node')
 const humanname = require('humanname')
+const addressit = require('addressit')
 // const phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance()
 
 
@@ -90,6 +91,8 @@ let extractByExtractor = function (data, extractor, {
 		// 		//
 		// 	}
 		// }
+	} else if (["address", "add"].includes(extractor)){
+		result = addressit(data)
 	} else if (["email", "mail", "@"].includes(extractor)) {
 		if (multiple) {
 			result = data.match(emailRegex) || data
@@ -349,7 +352,10 @@ module.exports = function ($) {
 						result[key] = filterData(result[key], f)
 					})
 				} else {
-					result[key] = filterData(result[key], filter)
+					// handle type of child
+					if(_.isString(result[key])){
+						result[key] = filterData(result[key], filter)
+					}
 				}
 			})
 		} else {
