@@ -95,7 +95,8 @@ let extractByExtractor = function (data, extractor, {
 	} else if (["date", "d"].includes(extractor)) {
 		result = chrono.casual.parseDate(data).toString()
 	} else if (["fullName", "prenom", "firstName", "nom", "lastName", "initials", "suffix", "salutation"].includes(extractor)) {
-		result = humanname.parse(data)
+		// compact data before to parse it
+		result = humanname.parse(filterData(data, "cmp"))
 		if ("fullName".includes(extractor)) {
 			// return the object
 		} else if (["firstName", "prenom"].includes(extractor)) {
