@@ -10,17 +10,24 @@ let parseData = function (data, regex, {
 	multiple = false
 } = {}) {
 	let result = data
+	let extracted
 	if (regex) {
 		try {
 			let rgx = regex
 			if (_.isString(regex)) {
 				rgx = new RegExp(regex, 'gim')
 			}
+			extracted = rgx.exec(data)
 			if (multiple) {
-				console.log("multiple");
-				result = data.match(rgx)
+				result = extracted
+				// result = data.match(rgx)
 			} else {
-				result = data.match(rgx)[0]
+				if(extracted[1]){
+					result = extracted[1]
+				} else {
+					result = extracted[0]
+				}
+				// result = data.match(rgx)[0]
 			}
 		} catch (error) {
 			// console.log("Regex error: ", error)
