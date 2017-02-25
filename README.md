@@ -480,6 +480,9 @@ npm run test-watch
 ⚠ Careful if you've been using **jsonframe** from the **version 1.x.x**, some things changed to make it more **flexible**, **faster to use (inline parameters)** and **more meaningful in the syntax**.
 [See the changelog](#changelog)
 
+**2.0.44** (25/02/2017)
+- Fix weird fullName parsing in some cases
+
 **2.0.4x** (24/02/2017)
 - Inline array for extractors like `"mails": [".parentSelector < email"]`
 - Adds french words: `prenom` and `nom` to humanname extractor
