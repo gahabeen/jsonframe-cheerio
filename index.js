@@ -23,7 +23,7 @@ let parseData = function (data, regex, {
 				result = extracted
 				// result = data.match(rgx)
 			} else {
-				if(extracted[1]){
+				if (extracted[1]) {
 					result = extracted[1]
 				} else {
 					result = extracted[0]
@@ -91,7 +91,7 @@ let extractByExtractor = function (data, extractor, {
 		// 		//
 		// 	}
 		// }
-	} else if (["address", "add"].includes(extractor)){
+	} else if (["address", "add"].includes(extractor)) {
 		result = addressit(data)
 	} else if (["email", "mail", "@"].includes(extractor)) {
 		if (multiple) {
@@ -353,7 +353,7 @@ module.exports = function ($) {
 					})
 				} else {
 					// handle type of child
-					if(_.isString(result[key])){
+					if (_.isString(result[key])) {
 						result[key] = filterData(result[key], filter)
 					}
 				}
@@ -427,30 +427,41 @@ module.exports = function ($) {
 										// Check if break included
 										if (g.break && _.isString(g.break)) {
 
-											let n = getNodesFromSmartSelector($(node), g.selector)
-											let nodes = $(n).children(g.break)
-
+											let parent = getNodesFromSmartSelector($(node), g.selector)
+											// Clone the parent to leave the initial DOM in place :)
+											let tempParent = $(parent).clone()
+											// Get the number of blocks to create
+											let l = $(tempParent).children(g.break).length
+											// Random name to set the list
 											var breaklist = "#breaklist1234"
-											$(n).after('<div id="breaklist1234"></div>')
+											// Add the list after the parent in the DOM
+											$(parent).after('<div id="breaklist1234"></div>')
 
-											// Creating a proper list
-											$(nodes).each(function (index, nn) {
-												// console.log("nn", $(nn).text());
-												$(breaklist).append('<div class="break b' + index + '"></div>')
-												$('.break.b' + index).append(nn)
+											// Moving the dom elements to blocks
+											for (var index = 0; index < l; index++) {
 
-												$($(n).find(g.break)[index]).nextUntil(g.break).each(function (i, e) {
-													$(breaklist).find('.break.b' + index).append(e)
+												$(breaklist).append('<div class="break"></div>')
+												// console.log("Appending: ",$(parent).children(g.break).first().text())
+
+												// Move the break element to the .break block
+												$(breaklist).children().last().append($(tempParent).children(g.break).first())
+
+												// Move the next blocks to the .break block
+												$(tempParent).children().first().nextUntil(g.break).each(function (i, e) {
+													// console.log("nextItem", $(e).text());
+													$(breaklist).children().last().append($(e))
 												})
-											})
+
+											}
 
 											elem[key] = []
 
 											// Iterating in this list
-											$(breaklist).children(".break").each(function (index, nn) {
-												elem[key][index] = {}
-												iterateThrough(g.data[0], elem[key][index], $(nn))
+											$(breaklist).children(".break").each(function (i, e) {
+												elem[key][i] = {}
+												iterateThrough(g.data[0], elem[key][i], $(e))
 											})
+
 
 										}
 										// Check if object in array
