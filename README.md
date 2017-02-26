@@ -480,7 +480,10 @@ npm run test-watch
 ⚠ Careful if you've been using **jsonframe** from the **version 1.x.x**, some things changed to make it more **flexible**, **faster to use (inline parameters)** and **more meaningful in the syntax**.
 [See the changelog](#changelog)
 
-**2.0.4x** (25/02/2017)
+**2.0.46** (26/02/2017)
+- Rebuild of the Unstructured scraper with breaks (_b) - Works like a charm now!
+
+**2.0.45** (25/02/2017)
 - Fix weird fullName parsing in some cases
 - Update Handle of Regex - Is now able to capture a group with a regex
 
