@@ -57,11 +57,21 @@ let filterData = function (data, filter) {
 	} else if (["noescapchar", "nec"].includes(filter)) {
 		result = result.replace(/\t+|\n+|\r+/gm, " ")
 	} else if (filter && filter.includes("right")) {
-		let nb = filter.match(/\d+/g)[0]
+		let regexified = filter.match(/\d+/g)
+		if(regexified && regexified[0]){
+			let nb = regexified[0]
 		result = result.substr(result.length - nb)
+		} else {
+			result = data
+		}
 	} else if (filter && filter.includes("left")) {
-		let nb = filter.match(/\d+/g)[0]
-		result = result.substr(0, nb)
+		let regexified = filter.match(/\d+/g)
+		if(regexified && regexified[0]){
+			let nb = regexified[0]
+			result = result.substr(0, nb)
+		} else {
+			result = data
+		}
 		//default
 	} else if (["compact", "cmp"].includes(filter) || !filter) {
 		result = result.replace(/\s+/gm, " ").trim()
