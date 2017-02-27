@@ -163,7 +163,7 @@ let extractByExtractor = function (data, extractor, {
 	let result = data
 	let emailRegex = /([a-zA-Z0-9._-]{0,30}@[a-zA-Z0-9._-]{0,15}\.[a-zA-Z0-9._-]{0,15})/gmi
 	let phoneRegex = /\+?\(?\d*\)? ?\(?\d+\)?\d*([\s./-]\d{2,})+/gmi
-	let websiteRegex = /(?:\s)(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gmi
+	let websiteRegex = /(?:[\s\W])?(http(s)?:\/\/)?(www\.)?[-a-zA-Z0-9:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&/=]*)/gmi
 
 	if (["phone", "telephone"].includes(extractor)) {
 		if (multiple) {
