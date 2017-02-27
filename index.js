@@ -129,18 +129,18 @@ let filterData = function (data, filter) {
 		if (regexified && regexified[1]) {
 			let nbs = regexified[1].split(/[,-]/gim)
 			let start, end
-			if(nbs.length > 1){
+			if (nbs.length > 1) {
 				start = parseInt(nbs[0].trim())
 				end = parseInt(nbs[1].trim())
 				if (_.isArray(result)) {
-					result = result.slice(start, end+1)
+					result = result.slice(start, end + 1)
 				} else {
 					result = result.substr(start, end)
 				}
 			}
 		}
 
-	} else if (filter && filter.includes("get")){
+	} else if (filter && filter.includes("get")) {
 		let regexified = filter.match(/\d+/g)
 		if (regexified && regexified[0]) {
 			let nb = regexified[0]
@@ -329,7 +329,7 @@ module.exports = function ($) {
 				parser: g.parser,
 				multiple: multiple
 			})
-
+			
 			if (r) {
 				if (result['_value']) {
 					if (_.isArray(r) && r.length > 1) {
@@ -360,7 +360,7 @@ module.exports = function ($) {
 			result = result[0]
 		}
 
-		if(g.filter && g.filter.join("").includes("join") && result.length === 1){
+		if (g.filter && g.filter.join("").includes("join") && result.length === 1) {
 			result = result[0]
 		}
 
@@ -429,7 +429,7 @@ module.exports = function ($) {
 		let localNode = node[0] || node // in case of many, shouldn't happen
 
 		if (attr) {
-			result = $(localNode).attr(attr)
+			result = $(localNode).attr(attr) || ""
 		} else if (extractor === "html") {
 			result = $(localNode).html()
 		} else {
@@ -490,169 +490,175 @@ module.exports = function ($) {
 
 			let gTime = new Date().getTime()
 
-			_.forOwn(obj, function (currentValue, key) {
+			if (_.isObject(obj)) {
 
-				// Security for jsonpath in "_to" > "_frame"
-				if (key === "_frame" || key === "_from") {
-					elem[key] = currentValue
+				_.forOwn(obj, function (currentValue, key) {
 
-					// If it's a group key
-				} else if (isAGroupKey(key)) {
+					// Security for jsonpath in "_to" > "_frame"
+					if (key === "_frame" || key === "_from") {
+						elem[key] = currentValue
 
-					let selector = getPropertyFromObj(currentValue, 'selector')
-					let data = getPropertyFromObj(currentValue, 'data')
-					let n = getNodesFromSmartSelector($(node), selector)
-					iterateThrough(data, elem, $(n))
+						// If it's a group key
+					} else if (isAGroupKey(key)) {
 
-				} else {
+						let selector = getPropertyFromObj(currentValue, 'selector')
+						let data = getPropertyFromObj(currentValue, 'data')
+						let n = getNodesFromSmartSelector($(node), selector)
+						iterateThrough(data, elem, $(n))
 
-					try {
+					} else {
 
-						let g = {}
+						try {
 
-						if (_.isObject(currentValue) && !_.isArray(currentValue)) {
-							g = getFunctionalParameters(currentValue)
+							let g = {}
+
+							if (_.isObject(currentValue) && !_.isArray(currentValue)) {
+								g = getFunctionalParameters(currentValue)
 
 
-							if (g.selector && _.isString(g.selector)) {
-								g = updateFunctionalParametersFromSelector(g, g.selector, $(node))
+								if (g.selector && _.isString(g.selector)) {
+									g = updateFunctionalParametersFromSelector(g, g.selector, $(node))
 
-								if (g.data && _.isObject(g.data)) {
+									if (g.data && _.isObject(g.data)) {
 
-									if (_.isArray(g.data)) {
+										if (_.isArray(g.data)) {
 
-										// Check if break included
-										if (g.break && _.isString(g.break)) {
+											// Check if break included
+											if (g.break && _.isString(g.break)) {
 
-											let parent = getNodesFromSmartSelector($(node), g.selector)
-											// Clone the parent to leave the initial DOM in place :)
-											let tempParent = $(parent).clone()
-											// Get the number of blocks to create
-											let l = $(tempParent).children(g.break).length
-											// Random name to set the list
-											var breaklist = "#breaklist1234"
-											// Add the list after the parent in the DOM
-											$(parent).after('<div id="breaklist1234"></div>')
+												let parent = getNodesFromSmartSelector($(node), g.selector)
+												// Clone the parent to leave the initial DOM in place :)
+												let tempParent = $(parent).clone()
+												// Get the number of blocks to create
+												let l = $(tempParent).children(g.break).length
+												// Random name to set the list
+												var breaklist = "#breaklist1234"
+												// Add the list after the parent in the DOM
+												$(parent).after('<div id="breaklist1234"></div>')
 
-											// Moving the dom elements to blocks
-											for (var index = 0; index < l; index++) {
+												// Moving the dom elements to blocks
+												for (var index = 0; index < l; index++) {
 
-												$(breaklist).append('<div class="break"></div>')
-												// console.log("Appending: ",$(parent).children(g.break).first().text())
+													$(breaklist).append('<div class="break"></div>')
+													// console.log("Appending: ",$(parent).children(g.break).first().text())
 
-												// Move the break element to the .break block
-												$(breaklist).children().last().append($(tempParent).children(g.break).first())
+													// Move the break element to the .break block
+													$(breaklist).children().last().append($(tempParent).children(g.break).first())
 
-												// Move the next blocks to the .break block
-												$(tempParent).children().first().nextUntil(g.break).each(function (i, e) {
-													// console.log("nextItem", $(e).text());
-													$(breaklist).children().last().append($(e))
+													// Move the next blocks to the .break block
+													$(tempParent).children().first().nextUntil(g.break).each(function (i, e) {
+														// console.log("nextItem", $(e).text());
+														$(breaklist).children().last().append($(e))
+													})
+
+												}
+
+												elem[key] = []
+
+												// Iterating in this list
+												$(breaklist).children(".break").each(function (i, e) {
+													elem[key][i] = {}
+													iterateThrough(g.data[0], elem[key][i], $(e))
 												})
 
+
+											}
+											// Check if object in array
+											else if (_.isObject(g.data[0]) && _.size(g.data[0]) > 0) {
+
+												elem[key] = []
+
+												$(node).find(g.selector).each(function (i, n) {
+													elem[key][i] = {}
+													iterateThrough(g.data[0], elem[key][i], $(n))
+												})
+
+												// If no object, taking the single string
+											} else if (_.isString(g.data[0])) {
+
+												let n = getNodesFromSmartSelector($(node), g.selector)
+												let dataResp = getDataFromNodes($(n), g)
+												if (dataResp) {
+													elem[key] = dataResp
+												}
+
 											}
 
-											elem[key] = []
+											// Simple data object to use parent selector as base
+										} else {
 
-											// Iterating in this list
-											$(breaklist).children(".break").each(function (i, e) {
-												elem[key][i] = {}
-												iterateThrough(g.data[0], elem[key][i], $(e))
-											})
-
-
-										}
-										// Check if object in array
-										else if (_.isObject(g.data[0]) && _.size(g.data[0]) > 0) {
-
-											elem[key] = []
-
-											$(node).find(g.selector).each(function (i, n) {
-												elem[key][i] = {}
-												iterateThrough(g.data[0], elem[key][i], $(n))
-											})
-
-											// If no object, taking the single string
-										} else if (_.isString(g.data[0])) {
-
-											let n = getNodesFromSmartSelector($(node), g.selector)
-											let dataResp = getDataFromNodes($(n), g)
-											if (dataResp) {
-												elem[key] = dataResp
+											if (_.size(g.data) > 0) {
+												elem[key] = {}
+												let n = $(node).find(g.selector).first()
+												iterateThrough(g.data, elem[key], $(n))
 											}
 
 										}
 
-										// Simple data object to use parent selector as base
 									} else {
 
-										if (_.size(g.data) > 0) {
-											elem[key] = {}
-											let n = $(node).find(g.selector).first()
-											iterateThrough(g.data, elem[key], $(n))
+										let n = getNodesFromSmartSelector($(node), g.selector)
+										let dataResp = getDataFromNodes($(n), g, {
+											multiple: false
+										})
+										if (dataResp) {
+											// push data as unit of array
+											elem[key] = dataResp
 										}
 
 									}
-
-								} else {
-
-									let n = getNodesFromSmartSelector($(node), g.selector)
-									let dataResp = getDataFromNodes($(n), g, {
-										multiple: false
-									})
-									if (dataResp) {
-										// push data as unit of array
-										elem[key] = dataResp
-									}
-
 								}
-							}
 
-							// There is no Selector but still an Object for organization
+								// There is no Selector but still an Object for organization
+								else {
+									elem[key] = {}
+									iterateThrough(currentValue, elem[key], node)
+								}
+							} else if (_.isArray(currentValue)) {
+
+								elem[key] = []
+								// For each unique string
+								currentValue.forEach(function (arrSelector, h) {
+									if (_.isString(arrSelector)) {
+
+										g = updateFunctionalParametersFromSelector(g, arrSelector, $(node))
+										let n = getNodesFromSmartSelector($(node), g.selector)
+										let dataResp = getDataFromNodes($(n), g)
+										if (dataResp) {
+											// push data as unit of array
+											elem[key].push(...dataResp)
+										}
+
+									}
+								})
+
+							}
+							// The Parameter is a single string === selector > directly scraped
 							else {
-								elem[key] = {}
-								iterateThrough(currentValue, elem[key], node)
-							}
-						} else if (_.isArray(currentValue)) {
 
-							elem[key] = []
-							// For each unique string
-							currentValue.forEach(function (arrSelector, h) {
-								if (_.isString(arrSelector)) {
-
-									g = updateFunctionalParametersFromSelector(g, arrSelector, $(node))
-									let n = getNodesFromSmartSelector($(node), g.selector)
-									let dataResp = getDataFromNodes($(n), g)
-									if (dataResp) {
-										// push data as unit of array
-										elem[key].push(...dataResp)
-									}
-
+								g = updateFunctionalParametersFromSelector(g, currentValue, $(node))
+								let n = getNodesFromSmartSelector($(node), g.selector)
+								let dataResp = getDataFromNodes($(n), g, {
+									multiple: false
+								})
+								
+								if (dataResp) {
+									// push data as unit of array
+									elem[key] = dataResp
 								}
-							})
 
-						}
-						// The Parameter is a single string === selector > directly scraped
-						else {
-
-							g = updateFunctionalParametersFromSelector(g, currentValue, $(node))
-							let n = getNodesFromSmartSelector($(node), g.selector)
-							let dataResp = getDataFromNodes($(n), g, {
-								multiple: false
-							})
-							if (dataResp) {
-								// push data as unit of array
-								elem[key] = dataResp
 							}
 
+						} catch (error) {
+							// console.log("obj key", key);
+							console.log(error)
 						}
 
-					} catch (error) {
-						console.log(error)
 					}
 
-				}
+				})
+			}
 
-			})
 		}
 
 		iterateThrough(frame, output, mainNode)
