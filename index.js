@@ -57,6 +57,15 @@ let filterData = function (data, filter) {
 		result = result.reduce(function(x){
 			return x.trim()
 		})
+	} else if (filter && filter.includes("between")){
+		let betweenValues = paranthethisRegex.exec(filter)
+		if(betweenValues && betweenValues[1]){
+			betweenValues = betweenValues[1].split("&&")
+			if(betweenValues.length > 1){
+				result = result.split(betweenValues[0].trim()).pop().split(betweenValues[1].trim()).shift().trim() || ""
+			}
+		}
+	
 	} else if (["trim"].includes(filter)) {
 		result = result.trim()
 	} else if (["lowercase", "lcase"].includes(filter)) {
