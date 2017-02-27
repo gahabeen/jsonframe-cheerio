@@ -54,7 +54,7 @@ let filterData = function (data, filter) {
 		result = result.filter(function(x){
 			return x !== ""
 		})
-		result = result.reduce(function(x){
+		result = result.map(function(x){
 			return x.trim()
 		})
 	} else if (filter && filter.includes("between")){
@@ -316,7 +316,10 @@ module.exports = function ($) {
 		if ((!g.filter || !g.filter.includes("split")) && !multiple && result[0]) {
 			result = result[0]
 		}
-		
+
+		// if(!multiple && result.length === 1){
+		// 	result = result[0]
+		// }
 
 		if (result.length === 0) {
 			result = null
