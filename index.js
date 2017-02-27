@@ -105,15 +105,6 @@ let extractByExtractor = function (data, extractor, {
 		} else {
 			result = data.match(phoneRegex) !== null ? data.match(phoneRegex)[0] : ""
 		}
-		// let countryCode = result.match(/([A-Z])+/)[0]
-		// console.log("countryCode", countryCode)
-		// if (countryCode) {
-		// 	try {
-		// 		result = phoneUtil.parse(result, "US") // with option, the country code number
-		// 	} catch (e) {
-		// 		//
-		// 	}
-		// }
 	} else if (["numbers", "nb"].includes(extractor)){
 		if (multiple) {
 			result = result.match(/\d+/gm) || ""
