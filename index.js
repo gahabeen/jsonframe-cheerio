@@ -62,18 +62,18 @@ let filterData = function (data, filter) {
 		if(betweenValues && betweenValues[1]){
 			betweenValues = betweenValues[1].split("&&")
 			if(betweenValues.length > 1){
-				result = result.split(betweenValues[0].trim()).pop().split(betweenValues[1].trim()).shift().trim() || ""
+				result = result.split(betweenValues[0].replace(/_/gm," ").trim()).pop().split(betweenValues[1].replace(/_/gm," ").trim()).shift().trim() || ""
 			}
 		}
 	} else if (filter && filter.includes("after")){
 		let afterValue = paranthethisRegex.exec(filter)
 		if(afterValue && afterValue[1]){
-			result = result.split(afterValue[1].trim()).pop().trim() || ""
+			result = result.split(afterValue[1].replace(/_/gm," ").trim()).pop().trim() || ""
 		}	
 	} else if (filter && filter.includes("before")){
 		let beforeValue = paranthethisRegex.exec(filter)
 		if(beforeValue && beforeValue[1]){
-			result = result.split(beforeValue[1].trim()).shift().trim() || ""
+			result = result.split(beforeValue[1].replace(/_/gm," ").trim()).shift().trim() || ""
 		}	
 	} else if (filter && filter.includes("css")){
 		// let cssValue = paranthethisRegex.exec(filter)
