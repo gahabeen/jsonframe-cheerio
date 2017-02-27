@@ -480,13 +480,17 @@ npm run test-watch
 ⚠ Careful if you've been using **jsonframe** from the **version 1.x.x**, some things changed to make it more **flexible**, **faster to use (inline parameters)** and **more meaningful in the syntax**.
 [See the changelog](#changelog)
 
-**2.0.47** (27/02/2017)
+**2.0.48** (27/02/2017)
 - Add Filter `Split(char)` to split string based on character (default to whitespace)
 - Add Extractor `numbers or nb` (return potentially an array)
 - Update Filter `numbers or nb` (simply filter the string to output only numbers)
 - Add Filter `between(string1&&string2)` to filter data by starting and finishing string
 - Add Filter `before(string)` to get data before a string
 - Add Filter `after(string)` to get data after a string
+- Add array support to Filter `left(nb)` and `right(nb)` (slice the array elements)
+- Add Filter `fromto(startNb,endNb)` to either slice an array or a string from index to index
+- Add Filter `get(nb)` to extract either an array item or a character from a string
+
 
 **2.0.46** (26/02/2017)
 - Rebuild of the Unstructured scraper with breaks (_b) - Works like a charm now!
@@ -495,7 +499,7 @@ npm run test-watch
 - Fix weird fullName parsing in some cases
 - Update Handle of Regex - Is now able to capture a group with a regex
 
-**2.0.4x** (24/02/2017)
+**2.0.44** (24/02/2017)
 - Inline array for extractors like `"mails": [".parentSelector < email"]`
 - Adds french words: `prenom` and `nom` to humanname extractor
 - Add filters: `right(number)`, `left(number)`
