@@ -44,44 +44,52 @@ let filterData = function (data, filter) {
 	let result = data
 	if (["raw"].includes(filter)) {
 		// let the raw data
+
 	} else if (filter && filter.includes("split")) {
 		let splitValue = paranthethisRegex.exec(filter)
-		if(splitValue && splitValue[1]) {
+		if (splitValue && splitValue[1]) {
 			result = result.split(splitValue[1])
 		} else {
 			result = result.split(" ")
 		}
-		result = result.filter(function(x){
+		result = result.filter(function (x) {
 			return x !== ""
 		})
-		result = result.map(function(x){
+		result = result.map(function (x) {
 			return x.trim()
 		})
-	} else if (filter && filter.includes("between")){
+	} else if (filter && filter.includes("between")) {
 		let betweenValues = paranthethisRegex.exec(filter)
-		if(betweenValues && betweenValues[1]){
+		if (betweenValues && betweenValues[1]) {
 			betweenValues = betweenValues[1].split("&&")
-			if(betweenValues.length > 1){
-				result = result.split(betweenValues[0].replace(/_/gm," ").trim()).pop().split(betweenValues[1].replace(/_/gm," ").trim()).shift().trim() || ""
+			if (betweenValues.length > 1) {
+				result = result.split(betweenValues[0].replace(/_/gm, " ").trim()).pop().split(betweenValues[1].replace(/_/gm, " ").trim()).shift().trim() || ""
 			}
 		}
-	} else if (filter && filter.includes("after")){
+	} else if (filter && filter.includes("after")) {
 		let afterValue = paranthethisRegex.exec(filter)
-		if(afterValue && afterValue[1]){
-			result = result.split(afterValue[1].replace(/_/gm," ").trim()).pop().trim() || ""
-		}	
-	} else if (filter && filter.includes("before")){
+		if (afterValue && afterValue[1]) {
+			result = result.split(afterValue[1].replace(/_/gm, " ").trim()).pop().trim() || ""
+		}
+	} else if (filter && filter.includes("before")) {
 		let beforeValue = paranthethisRegex.exec(filter)
-		if(beforeValue && beforeValue[1]){
-			result = result.split(beforeValue[1].replace(/_/gm," ").trim()).shift().trim() || ""
-		}	
-	} else if (filter && filter.includes("css")){
+		if (beforeValue && beforeValue[1]) {
+			result = result.split(beforeValue[1].replace(/_/gm, " ").trim()).shift().trim() || ""
+		}
+	} else if (filter && filter.includes("css")) {
 		// let cssValue = paranthethisRegex.exec(filter)
 		// if(cssValue && cssValue[1]){
 		// 	result = result.split(cssValue[1].trim()).pop().split(",",1).shift().trim() || ""
 		// }	
 	} else if (["trim"].includes(filter)) {
 		result = result.trim()
+	} else if (filter && filter.includes("join") && _.isArray(result)) {
+		let joinChar = paranthethisRegex.exec(filter)
+		if (joinChar && joinChar[1]) {
+			result = result.join(joinChar[1].replace(/_/gm, " "))
+		} else {
+			result = result.join(" ")
+		}
 	} else if (["lowercase", "lcase"].includes(filter)) {
 		result = result.toLowerCase()
 	} else if (["uppercase", "ucase"].includes(filter)) {
@@ -95,17 +103,52 @@ let filterData = function (data, filter) {
 		result = result.replace(/\W/gm, " ")
 	} else if (["noescapchar", "nec"].includes(filter)) {
 		result = result.replace(/\t+|\n+|\r+/gm, " ")
+
 	} else if (filter && filter.includes("right")) {
 		let regexified = filter.match(/\d+/g)
-		if(regexified && regexified[0]){
+		if (regexified && regexified[0]) {
 			let nb = regexified[0]
-		result = result.substr(result.length - nb)
+			if (_.isArray(result)) {
+				result = result.slice(result.length - nb, result.length)
+			} else {
+				result = result.substr(result.length - nb)
+			}
 		}
 	} else if (filter && filter.includes("left")) {
 		let regexified = filter.match(/\d+/g)
-		if(regexified && regexified[0]){
+		if (regexified && regexified[0]) {
 			let nb = regexified[0]
-			result = result.substr(0, nb)
+			if (_.isArray(result)) {
+				result = result.slice(0, nb)
+			} else {
+				result = result.substr(0, nb)
+			}
+		}
+	} else if (filter && filter.includes("fromto")) {
+		let regexified = paranthethisRegex.exec(filter)
+		if (regexified && regexified[1]) {
+			let nbs = regexified[1].split(/[,-]/gim)
+			let start, end
+			if(nbs.length > 1){
+				start = parseInt(nbs[0].trim())
+				end = parseInt(nbs[1].trim())
+				if (_.isArray(result)) {
+					result = result.slice(start, end+1)
+				} else {
+					result = result.substr(start, end)
+				}
+			}
+		}
+
+	} else if (filter && filter.includes("get")){
+		let regexified = filter.match(/\d+/g)
+		if (regexified && regexified[0]) {
+			let nb = regexified[0]
+			if (_.isArray(result)) {
+				result = result[nb]
+			} else {
+				result = result.charAt(nb)
+			}
 		}
 		//default
 	} else if (["compact", "cmp"].includes(filter) || !filter) {
@@ -128,7 +171,7 @@ let extractByExtractor = function (data, extractor, {
 		} else {
 			result = data.match(phoneRegex) !== null ? data.match(phoneRegex)[0] : ""
 		}
-	} else if (["numbers", "nb"].includes(extractor)){
+	} else if (["numbers", "nb"].includes(extractor)) {
 		if (multiple) {
 			result = result.match(/\d+/gm) || ""
 		} else {
@@ -313,13 +356,16 @@ module.exports = function ($) {
 		}
 
 		// avoid listing
-		if ((!g.filter || !g.filter.includes("split")) && !multiple && result[0]) {
+		if ((!g.filter || !g.filter.join("").includes("split")) && !multiple && result[0]) {
 			result = result[0]
 		}
-
-		// if(!multiple && result.length === 1){
-		// 	result = result[0]
+		// if(g.filter){
+		// 	console.log("g.filter", g.filter.join("").includes("join"))
+		// 	console.log(g.filter);
 		// }
+		if(g.filter && g.filter.join("").includes("join") && result.length === 1){
+			result = result[0]
+		}
 
 		if (result.length === 0) {
 			result = null
