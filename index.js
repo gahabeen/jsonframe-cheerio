@@ -359,10 +359,7 @@ module.exports = function ($) {
 		if ((!g.filter || !g.filter.join("").includes("split")) && !multiple && result[0]) {
 			result = result[0]
 		}
-		// if(g.filter){
-		// 	console.log("g.filter", g.filter.join("").includes("join"))
-		// 	console.log(g.filter);
-		// }
+
 		if(g.filter && g.filter.join("").includes("join") && result.length === 1){
 			result = result[0]
 		}
