@@ -480,6 +480,10 @@ npm run test-watch
 ⚠ Careful if you've been using **jsonframe** from the **version 1.x.x**, some things changed to make it more **flexible**, **faster to use (inline parameters)** and **more meaningful in the syntax**.
 [See the changelog](#changelog)
 
+**2.0.49** (27/02/2017)
+- Fixing issue when attribute doesn't exists (@ attributeNmae)
+- Improving array of object management (need to find a way to avoid empty objects still)
+
 **2.0.48** (27/02/2017)
 - Add Filter `Split(char)` to split string based on character (default to whitespace)
 - Add Extractor `numbers or nb` (return potentially an array)
@@ -490,7 +494,6 @@ npm run test-watch
 - Add array support to Filter `left(nb)` and `right(nb)` (slice the array elements)
 - Add Filter `fromto(startNb,endNb)` to either slice an array or a string from index to index
 - Add Filter `get(nb)` to extract either an array item or a character from a string
-
 
 **2.0.46** (26/02/2017)
 - Rebuild of the Unstructured scraper with breaks (_b) - Works like a charm now!
