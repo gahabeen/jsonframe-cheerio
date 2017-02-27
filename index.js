@@ -54,6 +54,9 @@ let filterData = function (data, filter) {
 		result = result.filter(function(x){
 			return x !== ""
 		})
+		result = result.reduce(function(x){
+			return x.trim()
+		})
 	} else if (["trim"].includes(filter)) {
 		result = result.trim()
 	} else if (["lowercase", "lcase"].includes(filter)) {
