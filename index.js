@@ -66,15 +66,20 @@ let filterData = function (data, filter) {
 			}
 		}
 	} else if (filter && filter.includes("after")){
-		let afterValues = paranthethisRegex.exec(filter)
-		if(afterValues && afterValues[1]){
-			result = result.split(afterValues[1].trim()).pop().trim() || ""
+		let afterValue = paranthethisRegex.exec(filter)
+		if(afterValue && afterValue[1]){
+			result = result.split(afterValue[1].trim()).pop().trim() || ""
 		}	
 	} else if (filter && filter.includes("before")){
-		let beforeValues = paranthethisRegex.exec(filter)
-		if(beforeValues && beforeValues[1]){
-			result = result.split(beforeValues[1].trim()).shift().trim() || ""
+		let beforeValue = paranthethisRegex.exec(filter)
+		if(beforeValue && beforeValue[1]){
+			result = result.split(beforeValue[1].trim()).shift().trim() || ""
 		}	
+	} else if (filter && filter.includes("css")){
+		// let cssValue = paranthethisRegex.exec(filter)
+		// if(cssValue && cssValue[1]){
+		// 	result = result.split(cssValue[1].trim()).pop().split(",",1).shift().trim() || ""
+		// }	
 	} else if (["trim"].includes(filter)) {
 		result = result.trim()
 	} else if (["lowercase", "lcase"].includes(filter)) {
