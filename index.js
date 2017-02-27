@@ -65,7 +65,16 @@ let filterData = function (data, filter) {
 				result = result.split(betweenValues[0].trim()).pop().split(betweenValues[1].trim()).shift().trim() || ""
 			}
 		}
-	
+	} else if (filter && filter.includes("after")){
+		let afterValues = paranthethisRegex.exec(filter)
+		if(afterValues && afterValues[1]){
+			result = result.split(afterValues[1].trim()).pop().trim() || ""
+		}	
+	} else if (filter && filter.includes("before")){
+		let beforeValues = paranthethisRegex.exec(filter)
+		if(beforeValues && beforeValues[1]){
+			result = result.split(beforeValues[1].trim()).shift().trim() || ""
+		}	
 	} else if (["trim"].includes(filter)) {
 		result = result.trim()
 	} else if (["lowercase", "lcase"].includes(filter)) {
