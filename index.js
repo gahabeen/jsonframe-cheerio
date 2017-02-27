@@ -115,7 +115,11 @@ let extractByExtractor = function (data, extractor, {
 		// 	}
 		// }
 	} else if (["numbers", "nb"].includes(extractor)){
-		result = result.match(/\d+/gm)
+		if (multiple) {
+			result = result.match(/\d+/gm) || ""
+		} else {
+			result = result.match(/\d+/gm) !== null ? result.match(/\d+/gm)[0] : ""
+		}
 	} else if (["website"].includes(extractor)) {
 		if (multiple) {
 			result = data.match(websiteRegex) || ""
