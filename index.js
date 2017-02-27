@@ -39,9 +39,21 @@ let parseData = function (data, regex, {
 
 let filterData = function (data, filter) {
 
+	let paranthethisRegex = /(?:\()(.+)(?:\))/gim
+
 	let result = data
 	if (["raw"].includes(filter)) {
 		// let the raw data
+	} else if (filter && filter.includes("split")) {
+		let splitValue = paranthethisRegex.exec(filter)
+		if(splitValue && splitValue[1]) {
+			result = result.split(splitValue[1])
+		} else {
+			result = result.split(" ")
+		}
+		result = result.filter(function(x){
+			return x !== ""
+		})
 	} else if (["trim"].includes(filter)) {
 		result = result.trim()
 	} else if (["lowercase", "lcase"].includes(filter)) {
@@ -61,16 +73,12 @@ let filterData = function (data, filter) {
 		if(regexified && regexified[0]){
 			let nb = regexified[0]
 		result = result.substr(result.length - nb)
-		} else {
-			result = data
 		}
 	} else if (filter && filter.includes("left")) {
 		let regexified = filter.match(/\d+/g)
 		if(regexified && regexified[0]){
 			let nb = regexified[0]
 			result = result.substr(0, nb)
-		} else {
-			result = data
 		}
 		//default
 	} else if (["compact", "cmp"].includes(filter) || !filter) {
@@ -237,6 +245,7 @@ module.exports = function ($) {
 		timestats = false,
 		multiple = true
 	} = {}) {
+
 		let result = []
 
 		if (timestats) {
@@ -280,9 +289,10 @@ module.exports = function ($) {
 		}
 
 		// avoid listing
-		if (!multiple && result[0]) {
+		if ((!g.filter || !g.filter.includes("split")) && !multiple && result[0]) {
 			result = result[0]
 		}
+		
 
 		if (result.length === 0) {
 			result = null
