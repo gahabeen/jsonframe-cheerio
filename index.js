@@ -329,7 +329,7 @@ module.exports = function ($) {
 				parser: g.parser,
 				multiple: multiple
 			})
-			
+
 			if (r) {
 				if (result['_value']) {
 					if (_.isArray(r) && r.length > 1) {
@@ -561,17 +561,20 @@ module.exports = function ($) {
 													iterateThrough(g.data[0], elem[key][i], $(e))
 												})
 
-
 											}
 											// Check if object in array
 											else if (_.isObject(g.data[0]) && _.size(g.data[0]) > 0) {
 
 												elem[key] = []
+												let nn = getNodesFromSmartSelector($(node), g.selector)
 
-												$(node).find(g.selector).each(function (i, n) {
-													elem[key][i] = {}
-													iterateThrough(g.data[0], elem[key][i], $(n))
-												})
+												if ($(nn).length > 0) {
+													$(nn).each(function (i, n) {
+														elem[key][i] = {}
+														iterateThrough(g.data[0], elem[key][i], $(n))
+													})
+												}
+
 
 												// If no object, taking the single string
 											} else if (_.isString(g.data[0])) {
@@ -641,7 +644,7 @@ module.exports = function ($) {
 								let dataResp = getDataFromNodes($(n), g, {
 									multiple: false
 								})
-								
+
 								if (dataResp) {
 									// push data as unit of array
 									elem[key] = dataResp
