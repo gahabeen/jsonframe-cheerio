@@ -24,6 +24,7 @@
 
 💪 **Reliable & fast**: used in production within crawlers
 
+[See the full changelog](#changelog)
 
 ## Example
 
@@ -478,7 +479,9 @@ npm run test-watch
 ## Changelog
 
 ⚠ Careful if you've been using **jsonframe** from the **version 1.x.x**, some things changed to make it more **flexible**, **faster to use (inline parameters)** and **more meaningful in the syntax**.
-[See the changelog](#changelog)
+
+**2.0.50** (27/02/2017)
+- Extractors chaining is now possible. For ex: `.selector < html email` would work
 
 **2.0.49** (27/02/2017)
 - Fixing issue when attribute doesn't exists (@ attributeNmae)
