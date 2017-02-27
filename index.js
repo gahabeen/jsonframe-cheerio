@@ -444,7 +444,7 @@ module.exports = function ($) {
 		extractors = extractor
 	}
 
-	if (extractor[0] && extractor[0] === "html") {
+	if (extractors[0] && extractors[0] === "html") {
 		result = $(localNode).html()
 	}
 
