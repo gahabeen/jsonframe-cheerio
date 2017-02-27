@@ -66,7 +66,8 @@ let filterData = function (data, filter) {
 	} else if (["capitalize", "cap"].includes(filter)) {
 		result = _.startCase(result)
 	} else if (["number", "nb"].includes(filter)) {
-		result = result.replace(/\D/gm, "")
+		result = result.match(/\d+/gm)
+		result = result.join(" ")
 	} else if (["words", "w"].includes(filter)) {
 		result = result.replace(/\W/gm, " ")
 	} else if (["noescapchar", "nec"].includes(filter)) {
@@ -113,6 +114,8 @@ let extractByExtractor = function (data, extractor, {
 		// 		//
 		// 	}
 		// }
+	} else if (["numbers", "nb"].includes(extractor)){
+		result = result.match(/\d+/gm)
 	} else if (["website"].includes(extractor)) {
 		if (multiple) {
 			result = data.match(websiteRegex) || ""
