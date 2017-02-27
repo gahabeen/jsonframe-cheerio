@@ -400,6 +400,7 @@ module.exports = function ($) {
 
 		if (res.selector.includes('<')) {
 			res.extractor = res.selector.oneSplitFromEnd('<')[1].trim()
+			res.extractor = res.extractor.split(/\s+/)
 			res.selector = res.selector.oneSplitFromEnd('<')[0].trim()
 		}
 
@@ -416,64 +417,81 @@ module.exports = function ($) {
 	}
 
 	let getTheRightData = function (node, {
-		attr = null,
-		extractor = null,
-		filter = null,
-		parser = null,
-		multiple = false
-	} = {}) {
+	attr = null,
+	extractor = null,
+	filter = null,
+	parser = null,
+	multiple = false
+} = {}) {
 
-		//assuming we handle only one node from getDataFromNodes
+	//assuming we handle only one node from getDataFromNodes
 
-		let result = null
-		let localNode = node[0] || node // in case of many, shouldn't happen
+	let result = null
+	let localNode = node[0] || node // in case of many, shouldn't happen
 
-		if (attr) {
-			result = $(localNode).attr(attr) || ""
-		} else if (extractor === "html") {
-			result = $(localNode).html()
-		} else {
-			result = $(localNode).text()
-		}
+	if (attr) {
+		result = $(localNode).attr(attr) || ""
+	} else {
+		result = $(localNode).text()
+	}
 
-		if (extractor && extractor !== "html") {
-			result = extractByExtractor(result, extractor, {
-				multiple
+	let extractors = []
+
+	// build an array of extractors anyway
+	if(!_.isArray(extractor)){
+		extractors.push(extractor)
+	} else {
+		extractors = extractor
+	}
+
+	if (extractor[0] && extractor[0] === "html") {
+		result = $(localNode).html()
+	}
+
+	if (_.isObject(result)) {
+		_.forOwn(result, function (value, key) {
+			extractors.forEach(function (ext, index) {
+				result[key] = extractByExtractor(result[key], ext, {multiple})
 			})
-		}
+		})
+	} else {
+		extractors.forEach(function (ext, index) {
+			result = extractByExtractor(result, ext, {multiple})
+		})
+	}
 
-		if (_.isObject(result)) {
-			_.forOwn(result, function (value, key) {
-				if (_.isArray(filter)) {
-					filter.forEach(function (f, index) {
-						result[key] = filterData(result[key], f)
-					})
-				} else {
-					// handle type of child
-					if (_.isString(result[key])) {
-						result[key] = filterData(result[key], filter)
-					}
-				}
-			})
-		} else {
+	if (_.isObject(result)) {
+		_.forOwn(result, function (value, key) {
 			if (_.isArray(filter)) {
 				filter.forEach(function (f, index) {
-					result = filterData(result, f)
+					result[key] = filterData(result[key], f)
 				})
 			} else {
-				result = filterData(result, filter)
+				// handle type of child
+				if (_.isString(result[key])) {
+					result[key] = filterData(result[key], filter)
+				}
 			}
-		}
-
-		if (parser) {
-			result = parseData(result, parser, {
-				multiple
+		})
+	} else {
+		if (_.isArray(filter)) {
+			filter.forEach(function (f, index) {
+				result = filterData(result, f)
 			})
+		} else {
+			result = filterData(result, filter)
 		}
-
-		return result
-
 	}
+
+	if (parser) {
+		result = parseData(result, parser, {
+			multiple
+		})
+	}
+
+	return result
+
+}
 
 
 	// real prototype
