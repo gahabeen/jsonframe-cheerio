@@ -16,7 +16,7 @@
 	</a>
 </h4>
 
-## **2.0.4** features
+## **2.0.5x** features
 
 😍 **JSON Syntax**: input json, output the same structured json including with scraped data
 
@@ -479,6 +479,9 @@ npm run test-watch
 ## Changelog
 
 ⚠ Careful if you've been using **jsonframe** from the **version 1.x.x**, some things changed to make it more **flexible**, **faster to use (inline parameters)** and **more meaningful in the syntax**.
+
+**2.0.51** (27/02/2017)
+- Fix a fatal error (argh) which was just a typo about the new chained extractors
 
 **2.0.50** (27/02/2017)
 - Extractors chaining is now possible. For ex: `.selector < html email` would work
