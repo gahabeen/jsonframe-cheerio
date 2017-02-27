@@ -480,6 +480,14 @@ npm run test-watch
 ⚠ Careful if you've been using **jsonframe** from the **version 1.x.x**, some things changed to make it more **flexible**, **faster to use (inline parameters)** and **more meaningful in the syntax**.
 [See the changelog](#changelog)
 
+**2.0.47** (27/02/2017)
+- Add Filter `Split(char)` to split string based on character (default to whitespace)
+- Add Extractor `numbers or nb` (return potentially an array)
+- Update Filter `numbers or nb` (simply filter the string to output only numbers)
+- Add Filter `between(string1&&string2)` to filter data by starting and finishing string
+- Add Filter `before(string)` to get data before a string
+- Add Filter `after(string)` to get data after a string
+
 **2.0.46** (26/02/2017)
 - Rebuild of the Unstructured scraper with breaks (_b) - Works like a charm now!
 
