@@ -207,7 +207,7 @@ let extractByExtractor = function (data, extractor, {
 	} else if (["date", "d"].includes(extractor)) {
 		let date = chrono.casual.parseDate(data)
 		if (date) {
-			result = chrono.casual.parseDate(data).toString()
+			result = date.toString()
 		} else {
 			result = ""
 		}
