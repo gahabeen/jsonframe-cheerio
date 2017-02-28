@@ -508,9 +508,9 @@ module.exports = function ($) {
 			})
 		}
 
-		if(!multiple && _.isArray(result)){
-			result = result[0]
-		}
+		// if(!multiple && _.isArray(result)){
+		// 	result = result[0]
+		// }
 
 		return result
 
