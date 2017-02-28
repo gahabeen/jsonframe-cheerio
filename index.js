@@ -359,9 +359,10 @@ module.exports = function ($) {
 					}
 				}
 			}
+
 			// not multiple wanted, stop at the first one
 			if (!multiple) {
-				return
+				return false
 			}
 		})
 
@@ -505,6 +506,10 @@ module.exports = function ($) {
 			result = parseData(result, parser, {
 				multiple
 			})
+		}
+
+		if(!multiple && _.isArray(result)){
+			result = result[0]
 		}
 
 		return result
