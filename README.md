@@ -484,7 +484,8 @@ npm run test-watch
 - Update the email regex
 - Update the website regex
 - Fix array into array results
-- Improving script efficiency getting data from node(s)"
+- Improving script efficiency getting data from node(s)
+- Fix date extractor when no date to extract
 
 **2.0.51** (27/02/2017)
 - Fix a fatal error (argh) which was just a typo about the new chained extractors
