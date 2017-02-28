@@ -180,7 +180,7 @@ let extractByExtractor = function (data, extractor, {
 	} else if (["website"].includes(extractor)) {
 
 		let websites = data.match(websiteRegex)
-		
+
 		if (websites && websites.length > 0) {
 			websites = websites.map(function (x) {
 				return x.substr(1, x.length) // remove first character
@@ -205,7 +205,12 @@ let extractByExtractor = function (data, extractor, {
 			result = data.match(emailRegex) !== null ? data.match(emailRegex)[0] : ""
 		}
 	} else if (["date", "d"].includes(extractor)) {
-		result = chrono.casual.parseDate(data).toString()
+		let date = chrono.casual.parseDate(data)
+		if (date) {
+			result = chrono.casual.parseDate(data).toString()
+		} else {
+			result = ""
+		}
 	} else if (["fullName", "prenom", "firstName", "nom", "lastName", "initials", "suffix", "salutation"].includes(extractor)) {
 		// compact data before to parse it
 		result = humanname.parse(filterData(data, "cmp"))
@@ -340,7 +345,7 @@ module.exports = function ($) {
 				multiple: multiple
 			})
 
-			if(_.isArray(r) && r.length === 1){
+			if (_.isArray(r) && r.length === 1) {
 				r = r[0]
 			}
 
