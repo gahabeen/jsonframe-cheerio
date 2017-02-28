@@ -163,7 +163,7 @@ let extractByExtractor = function (data, extractor, {
 	let result = data
 	let emailRegex = /([a-zA-Z0-9._-]{1,30}@[a-zA-Z0-9._-]{2,15}\.[a-zA-Z0-9._-]{2,15})/gmi
 	let phoneRegex = /\+?\(?\d*\)? ?\(?\d+\)?\d*([\s./-]\d{2,})+/gmi
-	let websiteRegex = /(?:[\s\W])?((https?:\/\/)?(www\.)?[-a-zA-Z0-9:%._\+~#=]{2,256}\.[a-z]{2,6}\b[-a-zA-Z0-9@:%_\+.~#?&/=]*)/gmi
+	let websiteRegex = /(?:[\s\W])((https?:\/\/)?(www\.)?[-a-zA-Z0-9:%._\+~#=]{2,256}\.[a-z]{2,6}\b[-a-zA-Z0-9@:%_\+.~#?&/=]*)/gmi
 
 	if (["phone", "telephone"].includes(extractor)) {
 		if (multiple) {
@@ -178,11 +178,21 @@ let extractByExtractor = function (data, extractor, {
 			result = result.match(/\d+/gm) !== null ? result.match(/\d+/gm)[0] : ""
 		}
 	} else if (["website"].includes(extractor)) {
-		if (multiple) {
-			result = data.match(websiteRegex) || ""
-		} else {
-			result = data.match(websiteRegex) !== null ? data.match(websiteRegex)[0] : ""
+
+		let websites = data.match(websiteRegex)
+		
+		if (websites && websites.length > 0) {
+			websites = websites.map(function (x) {
+				return x.substr(1, x.length) // remove first character
+			})
+
+			if (multiple) {
+				result = websites || ""
+			} else {
+				result = websites !== null ? websites[0] : ""
+			}
 		}
+
 	} else if (["address", "add"].includes(extractor)) {
 		result = addressit(data)
 	} else if (["email", "mail", "@"].includes(extractor)) {
@@ -330,6 +340,10 @@ module.exports = function ($) {
 				multiple: multiple
 			})
 
+			if(_.isArray(r) && r.length === 1){
+				r = r[0]
+			}
+
 			if (r) {
 				if (result['_value']) {
 					if (_.isArray(r) && r.length > 1) {
@@ -417,81 +431,85 @@ module.exports = function ($) {
 	}
 
 	let getTheRightData = function (node, {
-	attr = null,
-	extractor = null,
-	filter = null,
-	parser = null,
-	multiple = false
-} = {}) {
+		attr = null,
+		extractor = null,
+		filter = null,
+		parser = null,
+		multiple = false
+	} = {}) {
 
-	//assuming we handle only one node from getDataFromNodes
+		//assuming we handle only one node from getDataFromNodes
 
-	let result = null
-	let localNode = node[0] || node // in case of many, shouldn't happen
+		let result = null
+		let localNode = node[0] || node // in case of many, shouldn't happen
 
-	if (attr) {
-		result = $(localNode).attr(attr) || ""
-	} else {
-		result = $(localNode).text()
-	}
+		if (attr) {
+			result = $(localNode).attr(attr) || ""
+		} else {
+			result = $(localNode).text()
+		}
 
-	let extractors = []
+		let extractors = []
 
-	// build an array of extractors anyway
-	if(!_.isArray(extractor)){
-		extractors.push(extractor)
-	} else {
-		extractors = extractor
-	}
+		// build an array of extractors anyway
+		if (!_.isArray(extractor)) {
+			extractors.push(extractor)
+		} else {
+			extractors = extractor
+		}
 
-	if (extractors[0] && extractors[0] === "html") {
-		result = $(localNode).html()
-	}
+		if (extractors[0] && extractors[0] === "html") {
+			result = $(localNode).html()
+		}
 
-	if (_.isObject(result)) {
-		_.forOwn(result, function (value, key) {
-			extractors.forEach(function (ext, index) {
-				result[key] = extractByExtractor(result[key], ext, {multiple})
-			})
-		})
-	} else {
-		extractors.forEach(function (ext, index) {
-			result = extractByExtractor(result, ext, {multiple})
-		})
-	}
-
-	if (_.isObject(result)) {
-		_.forOwn(result, function (value, key) {
-			if (_.isArray(filter)) {
-				filter.forEach(function (f, index) {
-					result[key] = filterData(result[key], f)
+		if (_.isObject(result)) {
+			_.forOwn(result, function (value, key) {
+				extractors.forEach(function (ext, index) {
+					result[key] = extractByExtractor(result[key], ext, {
+						multiple
+					})
 				})
-			} else {
-				// handle type of child
-				if (_.isString(result[key])) {
-					result[key] = filterData(result[key], filter)
-				}
-			}
-		})
-	} else {
-		if (_.isArray(filter)) {
-			filter.forEach(function (f, index) {
-				result = filterData(result, f)
 			})
 		} else {
-			result = filterData(result, filter)
+			extractors.forEach(function (ext, index) {
+				result = extractByExtractor(result, ext, {
+					multiple
+				})
+			})
 		}
+
+		if (_.isObject(result)) {
+			_.forOwn(result, function (value, key) {
+				if (_.isArray(filter)) {
+					filter.forEach(function (f, index) {
+						result[key] = filterData(result[key], f)
+					})
+				} else {
+					// handle type of child
+					if (_.isString(result[key])) {
+						result[key] = filterData(result[key], filter)
+					}
+				}
+			})
+		} else {
+			if (_.isArray(filter)) {
+				filter.forEach(function (f, index) {
+					result = filterData(result, f)
+				})
+			} else {
+				result = filterData(result, filter)
+			}
+		}
+
+		if (parser) {
+			result = parseData(result, parser, {
+				multiple
+			})
+		}
+
+		return result
+
 	}
-
-	if (parser) {
-		result = parseData(result, parser, {
-			multiple
-		})
-	}
-
-	return result
-
-}
 
 
 	// real prototype
