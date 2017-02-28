@@ -480,6 +480,11 @@ npm run test-watch
 
 ⚠ Careful if you've been using **jsonframe** from the **version 1.x.x**, some things changed to make it more **flexible**, **faster to use (inline parameters)** and **more meaningful in the syntax**.
 
+**2.0.52** (28/02/2017)
+- Update the email regex
+- Update the website regex
+- Fix array into array results
+
 **2.0.51** (27/02/2017)
 - Fix a fatal error (argh) which was just a typo about the new chained extractors
 
