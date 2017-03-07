@@ -7,9 +7,8 @@ const addressit = require('addressit')
 // const phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance()
 
 
-let parseData = function (data, regex, {
-	multiple = false
-} = {}) {
+let parseData = function (data, regex, multiple = false) {
+
 	let result = data
 	let extracted
 	if (regex) {
@@ -157,9 +156,8 @@ let filterData = function (data, filter) {
 	return result
 }
 
-let extractByExtractor = function (data, extractor, {
-	multiple = false
-} = {}) {
+let extractByExtractor = function (data, extractor, multiple = false) {
+
 	let result = data
 	let emailRegex = /([a-zA-Z0-9._-]{1,30}@[a-zA-Z0-9._-]{2,15}\.[a-zA-Z0-9._-]{2,15})/gmi
 	let phoneRegex = /\+?\(?\d*\)? ?\(?\d+\)?\d*([\s./-]\d{2,})+/gmi
@@ -253,9 +251,10 @@ let getPropertyFromObj = function (obj, propertyName) {
 		'data': ['_d', '_data', '_donnee', 'data'],
 		'parser': ['_p', '_parser', '_parseur', 'parser'],
 		'break': ['_b', '_break', '_cassure']
+		// 'action': ['_action', '_act'],
+		// 'waitFor': ['_waitFor', '_wF']
 	}
 
-	let ob = this
 	let res = null
 	if (properties[propertyName]) {
 		properties[propertyName].forEach(function (property, i) {
@@ -284,8 +283,8 @@ String.prototype.oneSplitFromEnd = function (char) {
 
 module.exports = function ($) {
 
-
 	let getNodesFromSmartSelector = function (node, selector) {
+		// to be done => handle _parent_ + selector mixed
 		if (selector === "_parent_") {
 			return node
 		} else {
@@ -302,6 +301,8 @@ module.exports = function ($) {
 			data: getPropertyFromObj(obj, 'data'),
 			parser: getPropertyFromObj(obj, 'parser'),
 			break: getPropertyFromObj(obj, 'break')
+			// action: getPropertyFromObj(obj, 'action'),
+			// waitFor: getPropertyFromObj(obj, 'waitFor')
 		}
 
 		return result
@@ -436,23 +437,25 @@ module.exports = function ($) {
 		return res
 	}
 
-	let getTheRightData = function (node, {
-		attr = null,
-		extractor = null,
-		filter = null,
-		parser = null,
-		multiple = false
-	} = {}) {
+	let getTheRightData = function (node, parameters = {}) {
+
+		let {
+			attr = null,
+				extractor = null,
+				filter = null,
+				parser = null,
+				multiple = false
+		} = parameters
 
 		//assuming we handle only one node from getDataFromNodes
 
 		let result = null
 		let localNode = node[0] || node // in case of many, shouldn't happen
 
+		result = $(localNode).text()
+
 		if (attr) {
 			result = $(localNode).attr(attr) || ""
-		} else {
-			result = $(localNode).text()
 		}
 
 		let extractors = []
@@ -471,16 +474,12 @@ module.exports = function ($) {
 		if (_.isObject(result)) {
 			_.forOwn(result, function (value, key) {
 				extractors.forEach(function (ext, index) {
-					result[key] = extractByExtractor(result[key], ext, {
-						multiple
-					})
+					result[key] = extractByExtractor(result[key], ext, multiple)
 				})
 			})
 		} else {
 			extractors.forEach(function (ext, index) {
-				result = extractByExtractor(result, ext, {
-					multiple
-				})
+				result = extractByExtractor(result, ext, multiple)
 			})
 		}
 
@@ -508,26 +507,20 @@ module.exports = function ($) {
 		}
 
 		if (parser) {
-			result = parseData(result, parser, {
-				multiple
-			})
+			result = parseData(result, parser, multiple)
 		}
 
-		// if(!multiple && _.isArray(result)){
-		// 	result = result[0]
-		// }
-
 		return result
-
 	}
 
-
 	// real prototype
-	$.prototype.scrape = function (frame, {
-		debug = false,
-		timestats = false,
-		string = false
-	} = {}) {
+	$.prototype.scrape = function (frame, options = {}) {
+
+		let {
+			debug = false,
+			timestats = false,
+			string = false
+		} = options
 
 		let output = {}
 		let mainNode = $(this)
@@ -718,6 +711,5 @@ module.exports = function ($) {
 
 		return output
 	}
-
 
 }
