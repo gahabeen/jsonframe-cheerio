@@ -43,6 +43,7 @@
     "chrono-node": "^1.2.5",
     "google-libphonenumber": "^2.0.9",
     "humanname": "^0.2.2",
-    "lodash": "^4.17.4"
+    "lodash": "^4.17.4",
+    "winston": "^2.3.1"
   }
 }

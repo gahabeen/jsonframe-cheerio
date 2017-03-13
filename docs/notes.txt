@@ -1,0 +1,27 @@
+
+Property :
+	# Soit frame
+
+		_group
+			_selector
+			_data
+	
+	# Soit path
+
+		all properties
+
+	# Soit simple nom de propriété
+
+		value = string
+		
+		value = array
+
+			array of string
+
+		value = object
+			
+			_selector
+
+			_data
+			
+			_break
