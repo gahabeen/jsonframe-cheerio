@@ -8,7 +8,7 @@ let $ = cheerio.load(html)
 jsonframe($)
 
 let frame = {
-	"telephone": "[itemprop=usaphone] < telephone"
+	"img": ".picture @ src"
 }
 
 

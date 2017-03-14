@@ -122,7 +122,7 @@ module.exports = function ($) {
 			let attribute = null
 			actions.forEach(function (action) {
 				if (action.name === "attribute") {
-					attribute = actions.pop()
+					attribute = action
 					return true
 				}
 			})

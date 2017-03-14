@@ -109,14 +109,21 @@ module.exports = function ($ = null) {
 
 			selectorHasDelimiter = hasSelectorDelimiters(res.selector)
 		}
-		
-		let attributesNumber = actions.reduce((prev, d) => {
+
+		let attributesNumber = 0
+		actions.forEach(d => {
 			if (d.name === "attribute") {
-				return prev++
-			} else {
-				return prev
+				return attributesNumber++
 			}
-		}, 0)
+		})
+
+		// var attributesNumber = actions.reduce(function(prev, d) {
+		// 	if (d.name === "attribute") {
+		// 		return prev++
+		// 	} else {
+		// 		return prev
+		// 	}
+		// }, 0)
 
 		logger.debug(` > There are ${attributesNumber} attributes so far.`)
 
@@ -129,14 +136,21 @@ module.exports = function ($ = null) {
 				value: 'src'
 			})
 		}
-		
-		let filtersNumber = actions.reduce(function(prev, d){
+
+		let filtersNumber = 0
+		actions.forEach(d => {
 			if (d.name === "filter") {
-				return prev++
-			} else {
-				return prev
+				return filtersNumber++
 			}
-		}, 0)
+		})
+
+		// let filtersNumber = actions.reduce(function (prev, d) {
+		// 	if (d.name === "filter") {
+		// 		return prev++
+		// 	} else {
+		// 		return prev
+		// 	}
+		// }, 0)
 
 		logger.debug(` > There are ${JSON.stringify(filtersNumber, null, 2)} attributes so far.`)
 
