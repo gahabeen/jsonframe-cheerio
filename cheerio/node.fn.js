@@ -1,5 +1,5 @@
 const
-	logs = "info",
+	logs = "debug",
 	_ = require('lodash'),
 	{logger, sep} = require('./../logger/logger')(logs)
 
@@ -49,8 +49,8 @@ module.exports = function ($) {
 		logger.debug(`\n > multiple: ${multiple}`)
 		logger.debug(`\n > selector: ${selector}`)
 
-		if (selector.includes("__parent__")) {
-			selector = selector.replace("__parent__", "")
+		if (selector.includes("_parent_")) {
+			selector = selector.replace("_parent_", "")
 			nodes = node
 		}
 
@@ -120,11 +120,14 @@ module.exports = function ($) {
 
 			// Get attribute first if there is one
 			let attribute = null
-			attribute = actions.forEach(function (action) {
+			actions.forEach(function (action) {
 				if (action.name === "attribute") {
-					return actions.pop()
+					attribute = actions.pop()
+					return true
 				}
 			})
+
+			logger.debug(` > Attribute is: \n ${JSON.stringify(attribute, null, 2)}`)
 
 			if (attribute) {
 				result = $(localNode).attr(attribute.value) || "" // wrong attribute - return nothing

@@ -2,7 +2,7 @@
 require('./../common/string.fn')
 
 const
-	logs = "info",
+	logs = "debug",
 	{
 		logger,
 		sep
@@ -116,8 +116,11 @@ module.exports = function ($ = null) {
 			}
 		}, 0)
 
+		logger.debug(` > There are ${attributesNumber} attributes so far.`)
+
 		// Detect an image automatically
-		if (attributesNumber > 0 && $ && node && $(node).find(res.selector)['0'] && $(node).find(res.selector)['0'].name.toLowerCase() === "img") {
+		if (attributesNumber === 0 && $ && node && $(node).find(res.selector)['0'] && $(node).find(res.selector)['0'].name.toLowerCase() === "img") {
+			logger.debug(` > Detected an image, pushing the right attribute`)
 			actions.push({
 				name: 'attribute',
 				delimiter: '@',
@@ -126,6 +129,8 @@ module.exports = function ($ = null) {
 		}
 
 		res.actions = actions.reverse()
+
+		logger.debug(` > Actions in the queue: \n ${JSON.stringify(res.actions, null, 2)}`)
 
 		return res
 	}

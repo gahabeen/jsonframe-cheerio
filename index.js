@@ -7,9 +7,12 @@ const _ = require('lodash')
 // const phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance()
 
 const
-	logs = "debug",
+	logs = "info",
 	Properties = require('./common/properties.fn'),
-	{logger, sep} = require('./logger/logger')(logs)
+	{
+		logger,
+		sep
+	} = require('./logger/logger')(logs)
 
 module.exports = function ($) {
 
@@ -18,12 +21,12 @@ module.exports = function ($) {
 		FramePropertyParser = require('./jsonframe/frameproperty.parser')($),
 		StringParser = require('./jsonframe/string.parser')($),
 		ArrayParser = require('./jsonframe/array.parser')($),
-		ObjectParser = require('./jsonframe/object.parser')
+		ObjectParser = require('./jsonframe/object.parser')($)
 
 
 	// real prototype
 	$.prototype.scrape = function (frame, options = {}) {
-		
+
 		logger.debug(`\n ${sep} \n $.prototype.scrape(frame, options) \n`)
 
 		let {
@@ -90,6 +93,11 @@ module.exports = function ($) {
 						} else if (value && _.isObject(value)) {
 							logger.debug(`${property} is of type : object`)
 
+							let tempResult = null
+							tempResult = ObjectParser.getData(value, property, $(node), output, setActionsOnIteration)
+							if (tempResult) {
+								output[property] = tempResult
+							}
 						}
 					}
 

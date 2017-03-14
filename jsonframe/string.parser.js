@@ -4,23 +4,24 @@ const
 const
 	logs = "debug",
 	Properties = require('./../common/properties.fn'),
-	logger = require('./../logger/logger')(logs).logger
+	{logger, sep} = require('./../logger/logger')(logs)
 
 module.exports = function ($) {
 
-	logger.debug(`StringParser`)
+	logger.debug(`\n ${sep} \n StringParser \n`)
 	// Init
 	const
 		Node = require('./../cheerio/node.fn')($)
 
 	let getData = function (selector, node, output) {
-		logger.debug(`\n *****************************************`)
-		logger.debug(`getData(selector, node, output)`)
+		logger.debug(`\n ${sep} \n getData(selector, node, output) \n`)
+		logger.debug(`\n > selector: ${JSON.stringify(selector, null, 2)}`)
 
 		let result = Node.getAllData(selector, node)
 
-		logger.debug(`  > ${result}`)
-		
+		logger.debug(`\n > ${result}`)
+		logger.debug(sep)
+
 		return result
 	}
 

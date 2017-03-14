@@ -24,4 +24,10 @@ Property :
 
 			_data
 			
+			OR 
+			
+			_selector
+
+			_data
+			
 			_break

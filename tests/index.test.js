@@ -77,25 +77,8 @@ describe('JsonFrame Tests', () => {
 
 	describe('Get Attribute Data from Object {selector, attribute}', () => {
 
+
 		it('should get the price attribute value', () => {
-
-			let frame = {
-				"proPrice": {
-					_s: ".planName:contains('Pro') + span",
-					_a: "price"
-				}
-			}
-
-			let output = $('body').scrape(frame)
-
-			expect(output)
-				.toContain({
-					"proPrice": "39.00"
-				})
-
-		})
-
-		it('should get the price attribute value (inline)', () => {
 
 			let frame = {
 				"proPrice": ".planName:contains('Pro') + span @ price"
@@ -106,24 +89,6 @@ describe('JsonFrame Tests', () => {
 			expect(output)
 				.toContain({
 					"proPrice": "39.00"
-				})
-
-		})
-
-		it('should get the link (href) attribute value', () => {
-
-			let frame = {
-				"link": {
-					_s: ".mainLink",
-					_a: "href"
-				}
-			}
-
-			let output = $('body').scrape(frame)
-
-			expect(output)
-				.toContain({
-					"link": "some/url/to/somewhere"
 				})
 
 		})
@@ -148,23 +113,8 @@ describe('JsonFrame Tests', () => {
 
 	describe('Get Data with Type {selector, type[, attribute,]}', () => {
 
+
 		it('should get the USA telephone value', () => {
-			let frame = {
-				"telephone": {
-					_s: "[itemprop=usaphone]",
-					_t: "telephone"
-				}
-			}
-
-			let output = $('body').scrape(frame)
-
-			expect(output)
-				.toContain({
-					"telephone": "(912) 148-456"
-				})
-		})
-
-		it('should get the USA telephone value (inline)', () => {
 			let frame = {
 				"telephone": "[itemprop=usaphone] < telephone"
 			}
@@ -179,22 +129,6 @@ describe('JsonFrame Tests', () => {
 
 		it('should get the FR telephone value', () => {
 			let frame = {
-				"telephone": {
-					_s: "[itemprop=frphone]",
-					_t: "telephone"
-				}
-			}
-
-			let output = $('body').scrape(frame)
-
-			expect(output)
-				.toContain({
-					"telephone": "+332 38 30 37 90"
-				})
-		})
-
-		it('should get the FR telephone value (inline)', () => {
-			let frame = {
 				"telephone": "[itemprop=frphone] < telephone"
 			}
 
@@ -208,22 +142,6 @@ describe('JsonFrame Tests', () => {
 
 		it('should get the email value', () => {
 			let frame = {
-				"email": {
-					_s: "[itemprop=email]",
-					_t: "email"
-				}
-			}
-
-			let output = $('body').scrape(frame)
-
-			expect(output)
-				.toContain({
-					"email": "lspurcell@suddenlink.net"
-				})
-		})
-
-		it('should get the email value (inline)', () => {
-			let frame = {
 				"email": "[itemprop=email] < email"
 			}
 
@@ -236,22 +154,6 @@ describe('JsonFrame Tests', () => {
 		})
 
 		it('should get the inner html value', () => {
-			let frame = {
-				"inner": {
-					_s: ".popup",
-					_t: "html"
-				}
-			}
-
-			let output = $('body').scrape(frame)
-
-			expect(output)
-				.toContain({
-					"inner": "<span>Some inner content</span>"
-				})
-		})
-
-		it('should get the inner html value (inline)', () => {
 			let frame = {
 				"inner": ".popup < html"
 			}
@@ -270,23 +172,6 @@ describe('JsonFrame Tests', () => {
 	describe('Get Parsed Data thanks to Regex {selector, parse[, type, attribute]}', () => {
 
 		it('should get the parsed date dd/mm/yyyy from regex', () => {
-
-			let frame = {
-				"data": {
-					_s: ".date",
-					_p: /\d{1,2}\/\d{1,2}\/\d{2,4}/
-				}
-			}
-
-			let output = $('body').scrape(frame)
-
-			expect(output)
-				.toContain({
-					"data": "04/02/2017"
-				})
-		})
-
-		it('should get the parsed date dd/mm/yyyy from regex (inline)', () => {
 
 			let frame = {
 				"data": ".date || \\d{1,2}/\\d{1,2}/\\d{2,4}"
@@ -398,56 +283,6 @@ describe('JsonFrame Tests', () => {
 	describe('Full examples', () => {
 
 		it('should get the pricing list + details', () => {
-
-			let frame = {
-				"pricing": {
-					_s: "#pricing .item",
-					_d: [{
-						"name": ".planName",
-						"price": {
-							_s: ".planPrice",
-							_a: "price"
-						},
-						"image": {
-							"url": {
-								_s: "img",
-								_a: "src"
-							},
-							"link": {
-								_s: "a",
-								_a: "href"
-							}
-						}
-					}]
-				}
-			}
-
-			let output = $('body').scrape(frame)
-
-			expect(output)
-				.toContain({
-					"pricing": [{
-							"name": "Hacker",
-							"price": "0",
-							"image": {
-								"url": "./img/hacker.png",
-								"link": "/hacker"
-							}
-						},
-						{
-							"name": "Pro",
-							"price": "39.00",
-							"image": {
-								"url": "./img/pro.png",
-								"link": "/pro"
-							}
-						}
-					]
-				})
-
-		})
-
-		it('should get the pricing list + details (inline)', () => {
 
 			let frame = {
 				"pricing": {

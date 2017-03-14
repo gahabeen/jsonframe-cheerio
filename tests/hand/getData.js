@@ -8,14 +8,9 @@ let $ = cheerio.load(html)
 jsonframe($)
 
 let frame = {
-	"title": "title"
-	// _g_body: {
-	// 	_s: "body",
-	// 	_d: {
-	// 		"ul": ["ul li  | ucase"]
-	// 	}
-	// }
+	"img": ".picture"
 }
+
 
 let result = $('html').scrape(frame, {
 	string: true
