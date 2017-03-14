@@ -114,7 +114,7 @@ let getData = function (data, filter, multiple = false) {
 			}
 		}
 		//default
-	} else if (["compact", "cmp"].includes(filter) || !filter) {
+	} else if (filter === "" || ["compact", "cmp"].includes(filter)) {
 		result = result.replace(/\s+/gm, " ").trim()
 	}
 	return result

@@ -160,7 +160,7 @@ module.exports = function ($) {
 		if (action.name === "extractor") {
 			logger.debug(`PlayAction() > Extractor detected with action: \n ${JSON.stringify(action,null,2)}`)
 			if (action.value === "html") {
-				result = $(localNode).html()
+				result = $(node).html()
 			} else {
 				return Extractors.getData(result, action.value, multiple)
 			}

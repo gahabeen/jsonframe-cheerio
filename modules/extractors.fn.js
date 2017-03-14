@@ -1,4 +1,3 @@
-
 let getData = function (data, extractor, multiple = false) {
 
 	let result = data
@@ -73,4 +72,6 @@ let getData = function (data, extractor, multiple = false) {
 	return result
 }
 
-module.exports = getData
+module.exports = {
+	getData
+}

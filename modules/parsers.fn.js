@@ -1,4 +1,3 @@
-
 let getData = function (data, regex, multiple = false) {
 
 	let result = data
@@ -28,4 +27,6 @@ let getData = function (data, regex, multiple = false) {
 	return result
 }
 
-module.exports = getData
+module.exports = {
+	getData
+}

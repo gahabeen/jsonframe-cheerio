@@ -109,10 +109,12 @@ module.exports = function ($ = null) {
 
 			selectorHasDelimiter = hasSelectorDelimiters(res.selector)
 		}
-
-		let attributesNumber = actions.reduce((prev, delimiter) => {
-			if (delimiter.name === "attribute") {
-				return prev + 1
+		
+		let attributesNumber = actions.reduce((prev, d) => {
+			if (d.name === "attribute") {
+				return prev++
+			} else {
+				return prev
 			}
 		}, 0)
 
@@ -125,6 +127,25 @@ module.exports = function ($ = null) {
 				name: 'attribute',
 				delimiter: '@',
 				value: 'src'
+			})
+		}
+		
+		let filtersNumber = actions.reduce(function(prev, d){
+			if (d.name === "filter") {
+				return prev++
+			} else {
+				return prev
+			}
+		}, 0)
+
+		logger.debug(` > There are ${JSON.stringify(filtersNumber, null, 2)} attributes so far.`)
+
+		if (filtersNumber === 0) {
+			logger.debug(` > Add an empty filter to clean the entry`)
+			actions.unshift({
+				name: 'filter',
+				delimiter: '|',
+				value: ''
 			})
 		}
 
