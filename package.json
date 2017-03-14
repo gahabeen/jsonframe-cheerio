@@ -1,5 +1,5 @@
 {
-  "name": "jsonframe-cheerio@modular",
+  "name": "jsonframe-cheerio",
   "version": "3.0.0",
   "description": "simple multi-level scraper json input/output",
   "main": "index.js",
