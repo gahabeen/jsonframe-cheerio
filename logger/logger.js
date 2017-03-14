@@ -1,4 +1,3 @@
-
 module.exports = function (level) {
 
   const winston = require('winston')
@@ -13,5 +12,10 @@ module.exports = function (level) {
     ]
   })
 
-  return {logger}
+  let sep = `*****************************************`
+
+  return {
+    logger,
+    sep
+  }
 }

@@ -8,10 +8,17 @@ let $ = cheerio.load(html)
 jsonframe($)
 
 let frame = {
-	"title": "title | ucase lcase cap"
-	// "ul": ["ul li"]
+	"title": "title"
+	// _g_body: {
+	// 	_s: "body",
+	// 	_d: {
+	// 		"ul": ["ul li  | ucase"]
+	// 	}
+	// }
 }
 
-let result = $('html').scrape(frame, {string: true})
+let result = $('html').scrape(frame, {
+	string: true
+})
 
 console.log("Result:", result)

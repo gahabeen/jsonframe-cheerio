@@ -1,7 +1,7 @@
 const
 	logs = "info",
 	_ = require('lodash'),
-	logger = require('./../logger/logger')(logs).logger
+	{logger, sep} = require('./../logger/logger')(logs)
 
 const
 	Extractors = require('./../modules/extractors.fn'),
@@ -16,31 +16,38 @@ module.exports = function ($) {
 		Selector = require('./selector.fn')($)
 
 	let getAllData = function (selector, node, options = {}) {
-
-		logger.debug(`getAllData(selector, node, options): \n > selector: ${selector} \n > options: ${JSON.stringify(options, null, 2)} `)
+		logger.debug(`\n ${sep} \n getAllData(selector, node, options) \n`)
+		logger.debug(`\n > selector: ${selector} \n > options: ${JSON.stringify(options, null, 2)} `)
 		let selectorActions = Selector.getSelectorActions(selector, node)
 		let actions = selectorActions.actions
-		selector = selectorActions.selector
-		logger.debug(`> actions: \n ${JSON.stringify(actions, null, 2)}`)
+		let cleanSelector = selectorActions.selector
 
-		let nodes = getNodes(selector, node, options)
-		logger.debug(`> nodes: \n ${nodes}`)
+		logger.debug(`\n > cleanSelector: ${cleanSelector}`)
+		logger.debug(`\n > actions: \n ${JSON.stringify(actions, null, 2)}`)
+
+		let nodes = getNodes(cleanSelector, node, options)
+		logger.debug(`\n > nodes: \n ${nodes}`)
 
 		let data = handleEachNode(nodes, actions, options)
-		logger.debug(`> data: \n ${data}`)
+		logger.debug(`\n > data: \n ${data}`)
+		logger.debug(sep)
 
 		return data
 
 	}
 
 	let getNodes = function (selector, node, options = {}) {
-		let nodes = null
+		logger.debug(`\n ${sep} \n getNodes(selector, node, options = {}) \n`)
 
+		let nodes = null
 		let {
 			multiple
 		} = Object.assign({
 			multiple: false
 		}, options)
+
+		logger.debug(`\n > multiple: ${multiple}`)
+		logger.debug(`\n > selector: ${selector}`)
 
 		if (selector.includes("__parent__")) {
 			selector = selector.replace("__parent__", "")
@@ -56,6 +63,8 @@ module.exports = function ($) {
 			}
 
 		}
+
+		logger.debug(sep)
 
 		return nodes
 	}
@@ -90,7 +99,7 @@ module.exports = function ($) {
 	}
 
 	let getData = function (node, actions = [], options = {}) {
-		logger.debug(`getData(node, actions = [], options)`)
+		logger.debug(`\n ${sep} \n getData(node, actions = [], options) \n`)
 
 		let {
 			multiple

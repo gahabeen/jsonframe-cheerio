@@ -2,12 +2,14 @@ const
 	_ = require('lodash')
 
 const
-	Properties = require('./../common/properties.fn'),
-	Node = require('./../cheerio/node.fn')
+	Properties = require('./../common/properties.fn')
 
 module.exports = function ($) {
 
-	let get = function (value, propertyName, node, output, callback) {
+	const
+		Node = require('./../cheerio/node.fn')($)
+
+	let getData = function (value, propertyName, node, output, callback) {
 
 		if (propertyName === "group") {
 
@@ -22,7 +24,7 @@ module.exports = function ($) {
 
 				if (_.isString(selector)) {
 
-					let nextNode = Node.getNodes(node, selector, {
+					let nextNode = Node.getNodes(selector, node,{
 						multiple
 					})
 					callback(data, output, nextNode)
@@ -36,6 +38,8 @@ module.exports = function ($) {
 		}
 	}
 
-	return get
+	return {
+		getData
+	}
 
 }

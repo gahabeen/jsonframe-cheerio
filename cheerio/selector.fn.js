@@ -1,6 +1,13 @@
 // add oneSplitFromEnd
 require('./../common/string.fn')
 
+const
+	logs = "info",
+	{
+		logger,
+		sep
+	} = require('./../logger/logger')(logs)
+
 module.exports = function ($ = null) {
 
 	let selectorDelimiters = [{
@@ -31,11 +38,20 @@ module.exports = function ($ = null) {
 
 	let getLastAction = function (selector) {
 
+		logger.debug(`\n ${sep} \n getLastAction(selector) \n`)
+
 		let positions = selectorDelimiters.map(function (delimiter, index) {
 			return parseInt(selector.lastIndexOf(` ${delimiter.delimiter} `))
 		})
 
-		let delimiter = selectorDelimiters[positions.indexOf(Math.max(...positions))]
+		let maxPosition = Math.max(...positions)
+		let delimiter = null
+
+		if (maxPosition > 0) {
+			delimiter = selectorDelimiters[positions.indexOf(maxPosition)]
+		}
+
+		logger.debug(`\n > delimiter: \n ${JSON.stringify(delimiter, null, 2)}`)
 
 		if (delimiter) {
 			let splitValues = selector.oneSplitFromEnd(` ${delimiter.delimiter} `)

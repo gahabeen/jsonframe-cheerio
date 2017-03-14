@@ -7,10 +7,12 @@ const _ = require('lodash')
 // const phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance()
 
 const
-	Properties = require('./common/properties.fn')
+	logs = "debug",
+	Properties = require('./common/properties.fn'),
+	{logger, sep} = require('./logger/logger')(logs)
 
 module.exports = function ($) {
-	
+
 	// Init
 	const
 		FramePropertyParser = require('./jsonframe/frameproperty.parser')($),
@@ -21,6 +23,8 @@ module.exports = function ($) {
 
 	// real prototype
 	$.prototype.scrape = function (frame, options = {}) {
+		
+		logger.debug(`\n ${sep} \n $.prototype.scrape(frame, options) \n`)
 
 		let {
 			debug,
@@ -37,38 +41,54 @@ module.exports = function ($) {
 
 		let setActionsOnIteration = function (obj, output, node) {
 
+			logger.debug(`setActionsOnIteration(obj, output, node)`)
+
 			if (_.isObject(obj)) {
 
+				logger.debug(`setActionsOnIteration(obj, output, node)`)
+
 				_.forOwn(obj, function (value, property) {
+
+					logger.debug(`For the pair, value: ${value}, property: ${property}`)
 
 					let FrameProperty = Properties.isFrameProperty(property)
 					let PathProperty = Properties.isPathProperty(property)
 
 					if (FrameProperty.isTrue) {
 
-						FramePropertyParser.get(value, FrameProperty.propertyName, $(node), output, setActionsOnIteration)
+						logger.debug(`${property} is a FrameProperty`)
+						FramePropertyParser.getData(value, FrameProperty.propertyName, $(node), output, setActionsOnIteration)
 
 					} else if (PathProperty.isTrue) {
+
+						logger.debug(`${property} is a PathProperty`)
 						// Do nothing here
 						// Not supposed to see some
 					} else {
 
+						logger.debug(`${property} is a named property`)
+
 						if (value && _.isString(value)) {
+
+							logger.debug(`${property} is of type : string`)
 							// Extract the data from the selector
 							let tempResult = StringParser.getData(value, $(node), output)
 							if (tempResult) {
+								logger.debug(`${property} found value is : ${tempResult}`)
 								output[property] = tempResult
 							}
 
 						} else if (value && _.isArray(value)) {
-							
+
+							logger.debug(`${property} is of type : array`)
+
 							let tempResult = ArrayParser.ArrayOfString.getData(value, $(node), output)
 							if (tempResult) {
 								output[property] = tempResult
 							}
-							
-						} else if (value && _.isObject(value)) {
 
+						} else if (value && _.isObject(value)) {
+							logger.debug(`${property} is of type : object`)
 
 						}
 					}
@@ -87,6 +107,8 @@ module.exports = function ($) {
 		if (string) {
 			output = JSON.stringify(output, null, 2)
 		}
+
+		logger.debug(sep)
 
 		return output
 	}
