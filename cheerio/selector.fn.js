@@ -2,7 +2,7 @@
 require('./../common/string.fn')
 
 const
-	logs = "debug",
+	logs = "info",
 	{
 		logger,
 		sep

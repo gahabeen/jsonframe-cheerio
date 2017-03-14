@@ -65,6 +65,7 @@ module.exports = function ($) {
 					} else if (PathProperty.isTrue) {
 
 						logger.debug(`${property} is a PathProperty`)
+						logger.info(`Firing a flag on a potential PathProperty in JsonFrame`)
 						// Do nothing here
 						// Not supposed to see some
 					} else {

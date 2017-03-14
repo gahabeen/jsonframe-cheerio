@@ -1,5 +1,5 @@
 const
-	logs = "debug",
+	logs = "info",
 	_ = require('lodash'),
 	{logger, sep} = require('./../logger/logger')(logs)
 

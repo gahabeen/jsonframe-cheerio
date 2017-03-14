@@ -2,7 +2,7 @@ const
 	_ = require('lodash')
 
 const
-	logs = "debug",
+	logs = "info",
 	Properties = require('./../common/properties.fn'),
 	{logger, sep} = require('./../logger/logger')(logs)
 

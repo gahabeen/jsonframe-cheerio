@@ -29,11 +29,6 @@ module.exports = function ($) {
 					})
 					callback(data, output, nextNode)
 				}
-
-
-			} else {
-
-
 			}
 		}
 	}

@@ -8,7 +8,10 @@ let $ = cheerio.load(html)
 jsonframe($)
 
 let frame = {
-	"img": ".picture @ src"
+	"img": ".picture @ src",
+	"__something": {
+		"yes": "title"
+	}
 }
 
 

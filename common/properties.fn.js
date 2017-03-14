@@ -1,6 +1,7 @@
 const
+logs = "info",
 	_ = require('lodash')
-logger = require('./../logger/logger')("debug").logger
+logger = require('./../logger/logger')(logs).logger
 
 let frameProperties = {
 	'selector': ['_s', '_selector'],
@@ -52,7 +53,25 @@ let isFrameProperty = function (value) {
 }
 
 let isPathProperty = function (value) {
-	return isProperty(value, pathProperties)
+	let result = {
+		isTrue: false,
+		propertyName: null
+	}
+
+	if (value.startsWith("__")) {
+		result =  {
+			isTrue: true,
+			propertyName: "Unknown"
+		}
+		let propertyName = isProperty(value, pathProperties).propertyName
+		if(propertyName) {
+			result.propertyName = propertyName
+		}
+
+		return result
+	}
+	
+	return result
 }
 
 let getPropertyValue = function (obj, propertyName, propertiesList) {
