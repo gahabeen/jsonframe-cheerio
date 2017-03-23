@@ -3,7 +3,6 @@ const
 
 const
 	logs = "info",
-	FramePropertiesParser = require('./frameproperty.parser'),
 	{
 		logger,
 		sep
@@ -13,14 +12,17 @@ module.exports = function ($) {
 
 	const
 		Node = require('./../cheerio/node.fn')($),
-		StringParser = require('./string.parser')($)
+		StringParser = require('./string.parser')($),
+		FramePropertyParser = require('./frameproperty.parser')($)
 
 	let getData = function (value, property, node, output, callback) {
 		logger.debug(`\n ${sep} \n getData(value, node, output, callback) \n`)
 
-		let selector = FramePropertiesParser.getFramePropertyValue(value, "selector")
-		let data = FramePropertiesParser.getFramePropertyValue(value, "data")
-		let breakk = FramePropertiesParser.getFramePropertyValue(value, "break")
+		logger.debug(`${JSON.stringify(FramePropertyParser,null,2)}`)
+
+		let selector = FramePropertyParser.getFramePropertyValue(value, "selector")
+		let data = FramePropertyParser.getFramePropertyValue(value, "data")
+		let breakk = FramePropertyParser.getFramePropertyValue(value, "break")
 
 		let multiple = false
 		if (_.isArray(data)) {
@@ -44,9 +46,9 @@ module.exports = function ($) {
 
 				if (multiple) {
 					output[property] = []
-					$(nextNode).each(function(index, n){
+					$(nextNode).each(function (index, n) {
 						output[property][index] = {}
-						callback(data, output[property][index], $(n)) 
+						callback(data, output[property][index], $(n))
 					})
 				} else {
 					output[property] = {}
@@ -58,7 +60,7 @@ module.exports = function ($) {
 		} else if (selector && _.isString(selector) && data && breakk && _.isString(breakk) && multiple) {
 			// To redo
 
-		// Pass on the object for organization
+			// Pass on the object for organization
 		} else if (!selector) {
 			output[property] = {}
 			callback(value, output[property], node)

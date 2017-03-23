@@ -1,5 +1,5 @@
 // add oneSplitFromEnd
-require('./../common/string.fn')
+require('./../helpers/string.fn')
 
 const
 	logs = "info",

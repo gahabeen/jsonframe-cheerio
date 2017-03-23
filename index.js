@@ -4,7 +4,6 @@ const _ = require('lodash')
 
 const
 	logs = "info",
-	Properties = require('./common/properties.fn'),
 	logger = require('./logger/logger')(logs).logger,
 	sep = require('./logger/logger')(logs).sep
 
@@ -47,7 +46,7 @@ module.exports = function ($) {
 
 					logger.debug(`For the pair, value: ${value}, property: ${property}`)
 
-					let FrameProperty = Properties.isFrameProperty(property)
+					let FrameProperty = FramePropertyParser.isFrameProperty(property)
 
 					if (FrameProperty.isTrue) {
 

@@ -3,7 +3,6 @@ const
 
 module.exports = function ($) {
 
-
 	const Node = require('./../cheerio/node.fn')($)
 
 	let frameProperties = {
