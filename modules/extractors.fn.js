@@ -1,3 +1,8 @@
+const chrono = require('chrono-node')
+const humanname = require('humanname')
+const addressit = require('addressit')
+// const phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance()
+
 let getData = function (data, extractor, multiple = false) {
 
 	let result = data

@@ -1,10 +1,6 @@
 'use strict'
 
 const _ = require('lodash')
-// const chrono = require('chrono-node')
-// const humanname = require('humanname')
-// const addressit = require('addressit')
-// const phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance()
 
 const
 	logs = "info",
