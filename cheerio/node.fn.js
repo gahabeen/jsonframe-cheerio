@@ -6,8 +6,7 @@ const
 const
 	Extractors = require('./../modules/extractors.fn'),
 	Filters = require('./../modules/filters.fn'),
-	Parsers = require('./../modules/parsers.fn'),
-	Properties = require('./../common/properties.fn')
+	Parsers = require('./../modules/parsers.fn')
 
 module.exports = function ($) {
 

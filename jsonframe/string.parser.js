@@ -3,7 +3,6 @@ const
 
 const
 	logs = "info",
-	Properties = require('./../common/properties.fn'),
 	{logger, sep} = require('./../logger/logger')(logs)
 
 module.exports = function ($) {

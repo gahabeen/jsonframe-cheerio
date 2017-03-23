@@ -3,7 +3,7 @@ const
 
 const
 	logs = "info",
-	Properties = require('./../common/properties.fn'),
+	FramePropertiesParser = require('./frameproperty.parser'),
 	{
 		logger,
 		sep
@@ -18,9 +18,9 @@ module.exports = function ($) {
 	let getData = function (value, property, node, output, callback) {
 		logger.debug(`\n ${sep} \n getData(value, node, output, callback) \n`)
 
-		let selector = Properties.getFramePropertyValue(value, "selector")
-		let data = Properties.getFramePropertyValue(value, "data")
-		let breakk = Properties.getFramePropertyValue(value, "break")
+		let selector = FramePropertiesParser.getFramePropertyValue(value, "selector")
+		let data = FramePropertiesParser.getFramePropertyValue(value, "data")
+		let breakk = FramePropertiesParser.getFramePropertyValue(value, "break")
 
 		let multiple = false
 		if (_.isArray(data)) {

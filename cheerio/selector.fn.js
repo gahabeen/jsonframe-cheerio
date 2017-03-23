@@ -3,10 +3,8 @@ require('./../common/string.fn')
 
 const
 	logs = "info",
-	{
-		logger,
-		sep
-	} = require('./../logger/logger')(logs)
+	logger = require('./../logger/logger')(logs).logger,
+	sep = require('./../logger/logger')(logs).sep
 
 module.exports = function ($ = null) {
 
