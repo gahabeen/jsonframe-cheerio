@@ -1,3 +1,14 @@
+
+**Be advise that this library is in the process to behing moved officially to a brand new repo** with still the same concepts but developped in a better, more modular and safe way! Even if this repo has not moved since almost a year, heavy work has been done in parallel to fit our needs & bring a lot more possibilities to other developpers to extend it!
+
+Also, this brand (modular) was a first baby step towards it, you can still checkout the API in the main branch readme : https://github.com/gahabeen/jsonframe-cheerio/tree/master#readme.
+
+This will **not be maintain anymore** but should still work though.
+
+More coming soon.
+
+---
+
 [![NPM](https://nodei.co/npm/jsonframe-cheerio.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/jsonframe-cheerio/)
 
 <h2 align="center"><i>json</i>frame</h2> 
