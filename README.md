@@ -166,7 +166,7 @@ _See examples for each of them above._
 ```js
 ...
 let frame = {
-	"proPrice": ".planName:contains('Pro') + span@price"
+	"proPrice": ".planName:contains('Pro') + span @ price"
 }
 
 let result = $('body').scrape(frame, { string: true })
@@ -397,7 +397,7 @@ let frame = {
 			"price": ".planPrice @ price",
 			"image": {
 				"url": "img @ src",
-				"link": "a @href"
+				"link": "a @ href"
 			}
 		}]
 	}	
