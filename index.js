@@ -19,16 +19,11 @@ let parseData = function (data, regex, {
 				rgx = new RegExp(regex, 'gim')
 			}
 			extracted = rgx.exec(data)
-			if (multiple) {
-				result = extracted
-				// result = data.match(rgx)
+			
+			if (extracted[1]) {
+				result = extracted[1]
 			} else {
-				if (extracted[1]) {
-					result = extracted[1]
-				} else {
-					result = extracted[0]
-				}
-				// result = data.match(rgx)[0]
+				result = extracted[0]
 			}
 		} catch (error) {
 			// console.log("Regex error: ", error)
