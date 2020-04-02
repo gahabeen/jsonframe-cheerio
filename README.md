@@ -1,3 +1,5 @@
+// This repository is deprecated. Use it at your own risk! :)
+
 [![NPM](https://nodei.co/npm/jsonframe-cheerio.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/jsonframe-cheerio/)
 
 <h2 align="center"><i>json</i>frame</h2> 
