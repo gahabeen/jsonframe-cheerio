@@ -239,13 +239,13 @@ console.log( result )
 ```js
 ...
 let frame = { 
-	"data": ".date || \\d{1,2}/\\d{1,2}/\\d{2,4}"
+	"date": ".date || \\d{1,2}/\\d{1,2}/\\d{2,4}"
 }
 
 // or use the longer version for proper regex entry
 
 let frame = {
-	"data": {
+	"date": {
 		_s: ".date",
 		_p: /\d{1,2}\/\d{1,2}\/\d{2,4}/ // n[n]/n[n]/nn[nn] format here
 	}
