@@ -4,7 +4,7 @@
 
 [![NPM](https://nodei.co/npm/jsonframe-cheerio.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/jsonframe-cheerio/)
 
-<h2 align="center"><i>json</i>frame</h2> 
+<h2 align="center"><i>json</i>frame</h2>
 
 <h4 align="center">
 	<span>simple multi-level scraper json input/output</span><br>
@@ -49,7 +49,7 @@ let frame = {
 }
 
 console.log( $('body').scrape(frame, { string: true } ))
-/*=> 
+/*=>
 {
 	"title": "I love jsonframe!",
 	"email": "gabin@datascraper.pro"
@@ -82,7 +82,7 @@ let jsonframe = require('jsonframe-cheerio') // require from npm package
 jsonframe($) // apply the plugin to the current Cheerio instance
 ```
 
-### Scraper 
+### Scraper
 
 Once the plugin is loaded, you've first got to set the **frame** of your data.
 
@@ -190,7 +190,7 @@ It currently supports `email` (also `mail`), `telephone` (also `phone`), `date`,
 
 ```js
 ...
-let frame = { 
+let frame = {
 	"email": "[itemprop=email] < phone",
 	"frphone": "[itemprop=frphone] < phone"
 }
@@ -199,7 +199,7 @@ let result = $('body').scrape(frame, { string: true })
 console.log( result )
 
 /* output =>
-	{ 
+	{
 		"email": "example@google.net",
 		"frphone": "33238303790"
 	}
@@ -214,7 +214,7 @@ It currently supports `trim` (remove spaces at beginning and end), `lowercase or
 
 ```js
 ...
-let frame = { 
+let frame = {
 	"email1": "[itemprop=email] < phone | uppercase",
 	"email2": "[itemprop=email] < phone | capitalize"
 }
@@ -223,7 +223,7 @@ let result = $('body').scrape(frame, { string: true })
 console.log( result )
 
 /* output =>
-	{ 
+	{
 		"email1": "EXAMPLE@GOOGLE.NET",
 		"email2": "EXAMPLE GOOGLE NET"
 	}
@@ -238,7 +238,7 @@ console.log( result )
 
 ```js
 ...
-let frame = { 
+let frame = {
 	"data": ".date || \\d{1,2}/\\d{1,2}/\\d{2,4}"
 }
 
@@ -255,7 +255,7 @@ let result = $('body').scrape(frame, { string: true })
 console.log( result )
 
 /* output =>
-	{ 
+	{
 		"date": "04/02/2017"
 	}
 */
@@ -267,26 +267,26 @@ console.log( result )
 `_d: ["selector"]` will retrieves a list based on the selector inbetween quotes.  
 `_d: ["firstSelector", "secondSelector"]` works too and merge the results into one array
 
-You could even shorten it more by listing right from the selector as follows: 
+You could even shorten it more by listing right from the selector as follows:
 `"selectorName": [".selector"]` which returns an array of strings
 
 ```js
 ...
-let frame = { 
+let frame = {
 	"pricing": {
 		_s: "#pricing .item",
 		_d: [{
 			"name": ".planName",
 			"price": ".planPrice"
 		}]
-	}	
+	}
 }
 
 let result = $('body').scrape(frame, { string: true })
 console.log( result )
 
 /* output =>
-	{ 
+	{
 		"pricing": [
 			{
 				"name": "Hacker",
@@ -296,13 +296,13 @@ console.log( result )
 				"name": "Pro",
 				"price": "$39"
 			}
-		]	
+		]
 	}
 */
 
 // Or a shorter way which works for simple string arrays
 
-let frame = { 
+let frame = {
 	"pricingNames": ["#pricing .item .planName"]
 }
 
@@ -310,8 +310,8 @@ let result = $('body').scrape(frame, { string: true })
 console.log( result )
 
 /* output =>
-	{ 
-		"pricingNames": ["Hacker", "Pro"]	
+	{
+		"pricingNames": ["Hacker", "Pro"]
 	}
 */
 ...
@@ -323,7 +323,7 @@ ex: `_g_head : {}` or `_g_body : {}`
 
 ```js
 ...
-let frame = { 
+let frame = {
 	_g: {
 		_s: "#pricing .item",
 		_d: {
@@ -337,14 +337,14 @@ let frame = {
 			"secondName": ".planName",
 			"secondPrice": ".planPrice"
 		}
-	}	
+	}
 }
 
 let result = $('body').scrape(frame, { string: true })
 console.log( result )
 
 /* output =>
-	{ 
+	{
 		"name": "Hacker",
 		"price": "Free",
 		"secondName": "Hacker",
@@ -362,21 +362,21 @@ You can also use `"parent": { }` when you only want to nest data into objects wi
 
 ```js
 ...
-let frame = { 
+let frame = {
 	"pricing": {
 		_s: "#pricing .item",
 		_d: {
 			"name": ".planName",
 			"price": ".planPrice"
 		}
-	}	
+	}
 }
 
 let result = $('body').scrape(frame, { string: true })
 console.log( result )
 
 /* output =>
-	{ 
+	{
 		"pricing":{
 			"name": "Hacker",
 			"price": "Free"
@@ -393,7 +393,7 @@ See how you can properly `structure your data`, ready for the output!
 
 ```js
 ...
-let frame = { 
+let frame = {
 	"pricing": {
 		_s: "#pricing .item",
 		_d: [{
@@ -401,17 +401,17 @@ let frame = {
 			"price": ".planPrice @ price",
 			"image": {
 				"url": "img @ src",
-				"link": "a @href"
+				"link": "a @ href"
 			}
 		}]
-	}	
+	}
 }
 
 let result = $('body').scrape(frame, { string: true })
 console.log( result )
 
 /* output =>
-	{ 
+	{
 		"pricing":[
 			{
 				"name": "Hacker",
@@ -442,11 +442,11 @@ console.log( result )
 
 ```js
 ...
-let frame = { 
+let frame = {
 	"proPrice": {
 		_s: ".planName:contains('Pro') + span",
 		_a: "price"
-	}	
+	}
 }
 
 let result = $('body')
@@ -457,12 +457,12 @@ let result = $('body')
 console.log(result)
 
 /* output =>
-	{ 
+	{
 		"proPrice": {
 			"value":"39.00",
 			"_timestats": "1" // ms
 		}
-	
+
 	}
 */
 ...
